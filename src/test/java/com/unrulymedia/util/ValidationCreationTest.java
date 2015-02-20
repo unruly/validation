@@ -8,46 +8,46 @@ import java.io.IOException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ValidatorCreationTest {
+public class ValidationCreationTest {
 
     @Test
     public void shouldCreateASuccess() throws Exception {
-        Validator<String, ?> val = Validator.success("woot");
+        Validation<String, ?> val = Validation.success("woot");
         assertThat(val, ValidatorMatchers.isSuccessNotFailure());
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldNotBePossibleToCreateSuccessOfNull() throws Exception {
-        Validator.success(null);
+        Validation.success(null);
     }
 
     @Test
     public void shouldCreateAFailure() throws Exception {
-        Validator<?, String> val = Validator.failure("awww");
+        Validation<?, String> val = Validation.failure("awww");
         assertThat(val, ValidatorMatchers.isFailureNotSuccess());
         assertThat(val, ValidatorMatchers.hasErrorValue("awww"));
     }
 
     @Test
     public void shouldBeSuccessIfGivenFunction() throws Exception {
-        Validator<String, ? extends Exception> validator = Validator.tryTo(() -> "yay!");
-        assertThat(validator, ValidatorMatchers.isSuccessNotFailure());
+        Validation<String, ? extends Exception> validation = Validation.tryTo(() -> "yay!");
+        assertThat(validation, ValidatorMatchers.isSuccessNotFailure());
     }
 
     @Test
     public void shouldBeFailureIfGivenThrowingFunction() throws Exception {
-        Validator<String, Exception> validator = Validator.tryTo(() -> {
+        Validation<String, Exception> validation = Validation.tryTo(() -> {
             throw new IOException("oh noes");
         });
-        assertThat(validator, ValidatorMatchers.isFailureNotSuccess());
-        assertThat(validator, ValidatorMatchers.hasErrorValueWhichIsAnException(new IOException("oh noes")));
+        assertThat(validation, ValidatorMatchers.isFailureNotSuccess());
+        assertThat(validation, ValidatorMatchers.hasErrorValueWhichIsAnException(new IOException("oh noes")));
     }
 
     @Test
     public void shouldBeFailureIfGivenNullReturningFunction() throws Exception {
-        Validator<?, Exception> objectValidator = Validator.tryTo(() -> null);
-        assertThat(objectValidator, ValidatorMatchers.isFailureNotSuccess());
-        assertThat(objectValidator, ValidatorMatchers.hasErrorValueWhichIsAnException(new NullPointerException()));
+        Validation<?, Exception> objectValidation = Validation.tryTo(() -> null);
+        assertThat(objectValidation, ValidatorMatchers.isFailureNotSuccess());
+        assertThat(objectValidation, ValidatorMatchers.hasErrorValueWhichIsAnException(new NullPointerException()));
     }
 
 

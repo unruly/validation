@@ -9,33 +9,33 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ValidatorToAndFromOptionalTest {
+public class ValidationToAndFromOptionalTest {
 
     @Test
     public void shouldCreateASuccessFromNonEmptyOptional() throws Exception {
-        Validator<String, NoSuchElementException> validator = Validator.from(Optional.of("hello!"));
-        assertThat(validator, ValidatorMatchers.isSuccessNotFailure());
-        assertThat(validator, ValidatorMatchers.hasValue("hello!"));
+        Validation<String, NoSuchElementException> validation = Validation.from(Optional.of("hello!"));
+        assertThat(validation, ValidatorMatchers.isSuccessNotFailure());
+        assertThat(validation, ValidatorMatchers.hasValue("hello!"));
     }
 
     @Test
     public void shouldCreateAFailureFromEmptyOptional() throws Exception {
-        Validator<String, NoSuchElementException> validator = Validator.from(Optional.empty());
-        assertThat(validator, ValidatorMatchers.isFailureNotSuccess());
-        assertThat(validator, ValidatorMatchers.hasErrorValueWhichIsAnException(new NoSuchElementException()));
+        Validation<String, NoSuchElementException> validation = Validation.from(Optional.empty());
+        assertThat(validation, ValidatorMatchers.isFailureNotSuccess());
+        assertThat(validation, ValidatorMatchers.hasErrorValueWhichIsAnException(new NoSuchElementException()));
     }
 
     @Test
     public void shouldCreateANonEmptyOptionalFromASuccess() throws Exception {
-        Validator<String,String> success = Validator.success("woop");
+        Validation<String,String> success = Validation.success("woop");
         Optional<String> opt = success.toOptional();
         assertThat(opt.get(), is("woop"));
     }
 
     @Test
     public void shouldCreateEmptyOptionalFromFailure() throws Exception {
-        Validator<Object, String> validator = Validator.failure("meh");
-        Optional<Object> optional = validator.toOptional();
+        Validation<Object, String> validation = Validation.failure("meh");
+        Optional<Object> optional = validation.toOptional();
         assertThat(optional,is(Optional.empty()));
     }
 

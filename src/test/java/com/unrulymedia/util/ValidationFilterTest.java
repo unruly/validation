@@ -5,36 +5,36 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
 
-public class ValidatorFilterTest {
+public class ValidationFilterTest {
 
     @Test
     public void shouldReturnSuccessIfPredicateTrue()  {
-        Validator<Integer, ?> validator = Validator.success(3);
-        Validator<Integer, ?> filtered = validator.filter((a) -> true);
+        Validation<Integer, ?> validation = Validation.success(3);
+        Validation<Integer, ?> filtered = validation.filter((a) -> true);
         assertThat(filtered, ValidatorMatchers.isSuccessNotFailure());
         assertThat(filtered, ValidatorMatchers.hasValue(3));
     }
 
     @Test
     public void shouldReturnFailureIfPredicateFalse() throws Exception {
-        Validator<Integer, Integer> validator = Validator.success(3);
-        Validator<Integer, ?> filtered = validator.filter((a) -> false);
+        Validation<Integer, Integer> validation = Validation.success(3);
+        Validation<Integer, ?> filtered = validation.filter((a) -> false);
         assertThat(filtered, ValidatorMatchers.isFailureNotSuccess());
         assertThat(filtered, ValidatorMatchers.hasErrorValue(3));
     }
 
     @Test
     public void shouldReturnFailureIfPredicateThrows() throws Exception {
-        Validator<Integer,?> validator = Validator.success(3);
-        Validator<Integer,?> filtered = validator.filter((a) -> {throw new Exception("why is a predicate throwing anyway?");});
+        Validation<Integer,?> validation = Validation.success(3);
+        Validation<Integer,?> filtered = validation.filter((a) -> {throw new Exception("why is a predicate throwing anyway?");});
         assertThat(filtered, ValidatorMatchers.isFailureNotSuccess());
         assertThat(filtered, ValidatorMatchers.hasErrorValueWhichIsAnException(new Exception("why is a predicate throwing anyway?")));
     }
 
     @Test
     public void shouldReturnFailureIfFilteringFailure() throws Exception {
-        Validator<?,String> validator = Validator.failure("woops");
-        Validator<?, ?> filtered = validator.filter(a -> true);
+        Validation<?,String> validation = Validation.failure("woops");
+        Validation<?, ?> filtered = validation.filter(a -> true);
         assertThat(filtered, ValidatorMatchers.isFailureNotSuccess());
         assertThat(filtered, ValidatorMatchers.hasErrorValue("woops"));
     }

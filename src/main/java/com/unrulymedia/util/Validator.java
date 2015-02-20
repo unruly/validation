@@ -1,148 +1,70 @@
 package com.unrulymedia.util;
 
-import com.unrulymedia.util.function.ExceptionalFunction;
 import com.unrulymedia.util.function.ExceptionalPredicate;
-import com.unrulymedia.util.function.ExceptionalSupplier;
 
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class Validator<T,S> {
-    private final List<T> value;
-    private final Optional<S> error;
+public class Validator<T,U> {
+    private Validator() {throw new RuntimeException();};
 
-    private Validator() {
-        throw new RuntimeException("don't do that");
+    private Validator(List<ValidatorPair<T, U>> validatorPairs) {
+        this.validatorPairs = validatorPairs;
     }
 
-    private Validator(T value, S error) {
-        this.value = Optional.ofNullable(value).map(Arrays::asList).orElse(Collections.<T>emptyList());
-        this.error = Optional.ofNullable(error);
-    }
+    private static class ValidatorPair<T,U> {
+        final Predicate<T> predicate;
+        final U error;
 
-    public static <U,V> Validator<U,V> success(U value) {
-        return new Validator<>(Objects.requireNonNull(value), null);
-    }
-
-    public static <U,V> Validator<U,V> failure(V error) {
-        return new Validator<>(null, error);
-    }
-
-    public static <U, V extends Exception> Validator<U,V> tryTo(ExceptionalSupplier<U,V> f) {
-        try {
-            return Validator.<U,V>success(f.get());
-        } catch (Exception e) {
-            return Validator.<U,V>failure((V)e);
+        private ValidatorPair(Predicate<T> predicate, U error) {
+            this.predicate = predicate;
+            this.error = error;
         }
     }
 
-    public static <U> Validator<U, NoSuchElementException> from(Optional<U> opt) {
-        Validator<U, java.util.NoSuchElementException> failure = (Validator.failure(new NoSuchElementException()));
-        return opt.map(Validator::<U, NoSuchElementException>success).orElse(failure);
+    private final List<ValidatorPair<T,U>> validatorPairs;
+
+    public static <T,U> Validator<T,U> from(Predicate<T> predicate, U failure) {
+        return new Validator<>(Arrays.asList(new ValidatorPair<>(predicate,failure)));
     }
 
-
-    public boolean isSuccess() {
-        return !value.isEmpty();
+    public Validator<T,U> compose(Validator<T,U> other) {
+        List<ValidatorPair<T, U>> newValidatorPairs = Stream.concat(validatorPairs.stream(), other.validatorPairs.stream()).collect(Collectors.toList());
+        return new Validator<>(newValidatorPairs);
     }
 
-    public boolean isFailure() {
-        return !isSuccess();
-    }
+    public Validation<T,U> validate(T value) {/*
+        Validation<T, List<U>> success = Validation.success(value);
 
-    public T get() {
-        return Optional.ofNullable(value.get(0)).get();
-    }
-
-    public S getError() {
-        return error.get();
-    }
-
-    public T orElse(T other) {
-        return Optional.ofNullable(value.get(0)).orElse(other);
-
-    }
-
-    public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
-        return Optional.ofNullable(value.get(0)).orElseThrow(exceptionSupplier);
-    }
-
-    public T orElseGet(Supplier<? extends T> other) {
-        return Optional.ofNullable(value.get(0)).orElseGet(other);
-    }
-
-    public Optional<T> toOptional() {
-        return Optional.ofNullable(value.get(0));
-    }
-
-    public <U> Validator<U, ?> map(ExceptionalFunction<? super T, ? extends U, ? extends Exception> mapper) {
-        Objects.requireNonNull(mapper);
-        if(isFailure()) {
-            return new Validator<>(null,error);
-        } else {
-            try {
-                U mapped = mapper.apply(Optional.ofNullable(value.get(0)).get());
-                if(mapped == null) {
-                    return failure(new NullPointerException());
-                }
-                return new Validator<>(mapped,null);
-            } catch (Exception e) {
-                return Validator.failure(e);
+       List<U> errors = validatorPairs.stream().map(pair -> {
+            try {if(pair.predicate.test(value)) {
+                return Validation.<T,U>success(value);
+            } else {
+                return Validation.<T,U>failure(pair.error);
+            }} catch(Exception e) {
+                return Validation.<T,U>failure(pair.error);
             }
-        }
-    }
+                }).filter(Validation::isFailure).map(Validation::getErrors).collect(Collectors.toList());
 
-    public <U> Validator<U, ?> flatMap(ExceptionalFunction<? super T, ? extends Validator<U, ?>, ? extends Exception> mapper) {
-        Objects.requireNonNull(mapper);
-        if(isFailure()) {
-            return new Validator<>(null,error);
-        } else {
-            try {
-                Validator<U, ?> mapped = mapper.apply(Optional.ofNullable(value.get(0)).get());
-                return mapped == null ? Validator.failure(new NullPointerException()) : mapped;
-            } catch (Exception e) {
-                return Validator.failure(e);
-            }
-        }
-    }
+        return errors.isEmpty() ? success : Validation.failure(errors);*/
 
-    public Validator<T, ?> filter(ExceptionalPredicate<? super T, ? extends Exception> predicate) {
-        Objects.requireNonNull(predicate);
-        if (isFailure()) {
-            return this;
-        } else {
-            try {
-                T actualValue = Optional.ofNullable(value.get(0)).get();
-                return predicate.test(actualValue) ? this : failure(actualValue);
-            } catch (Exception e) {
-                return failure(e);
-            }
-        }
+        return validatorPairs
+                .stream()
+                .map(pair -> pair.predicate.test(value) ? Validation.<T, U>success(value) : Validation.<T, U>failure(pair.error))
+                .reduce(Validation.<T, U>success(value), (Validation<T, U> val1, Validation<T, U> val2) -> {
+                    if (val1.isSuccess() && val2.isSuccess()) {
+                        return val1;
+                    } else {
+                        List<U> errors = Stream.concat(
+                                val1.getErrors().stream(),
+                                val2.getErrors().stream()
+                        ).collect(Collectors.toList());
+                        return Validation.<T, U>failure(errors);
+                    }
+                });
     }
-
-    @Override
-    public String toString() {
-        return "com.unrulymedia.util.Validator{" +
-                "value=" + value +
-                ", error=" + error +
-                '}';
-    }
-
-    public <V> Validator<List<V>, S> compose(Validator<V,S> other) {
-        /*if(value.get() instanceof List) {
-            Stream<V> concat = Stream.concat(
-                    ((List<V>) value.get()).stream(),
-                    Stream.of(other.get())
-                    );
-            List<V> collect = concat.collect(Collectors.toList());
-            return Validator.<List<V>,S>success(collect);
-        }
-        Stream<V> stream = Stream.<V>of((V)value.get(), other.get());
-        List<V> collect = stream.collect(Collectors.toList());
-        return success(collect);*/
-        return null;
-    }
-
 }
