@@ -5,7 +5,10 @@ import com.unrulymedia.util.function.ExceptionalPredicate;
 import com.unrulymedia.util.function.ExceptionalSupplier;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Validation<T,S> {
     private final Optional<T> value;
@@ -124,11 +127,43 @@ public final class Validation<T,S> {
         }
     }
 
+    public Validation<T,S> compose(Validation<T,S> that, BiFunction<T,T,T> f) {
+        if(this.isFailure() && that.isFailure()) {
+            List<S> composedErrors = Stream.concat(this.getErrors().stream(),that.getErrors().stream()).collect(Collectors.toList());
+            return failure(composedErrors);
+        }
+        if(that.isFailure()) {
+            return that;
+        }
+        if(this.isFailure()) {
+            return this;
+        }
+        return Validation.success(f.apply(this.get(),that.get()));
+    }
+
     @Override
     public String toString() {
         return "com.unrulymedia.util.Validator{" +
                 "value=" + value +
                 ", errors=" + errors +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Validation that = (Validation) o;
+
+        return errors.equals(that.errors) && value.equals(that.value);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = value.hashCode();
+        result = 31 * result + errors.hashCode();
+        return result;
     }
 }
