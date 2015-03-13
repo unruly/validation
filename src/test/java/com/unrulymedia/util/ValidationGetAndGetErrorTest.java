@@ -1,6 +1,6 @@
 package com.unrulymedia.util;
 
-import com.unrulymedia.util.testutils.ValidatorMatchers;
+import com.unrulymedia.util.testutils.ValidationMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,13 +16,13 @@ public class ValidationGetAndGetErrorTest {
     @Test
     public void shouldGetTheSuccessValueFromASuccess() throws Exception {
         Validation<String, ?> val = Validation.success("woot");
-        assertThat(val, ValidatorMatchers.hasValue("woot"));
+        assertThat(val, ValidationMatchers.hasValue("woot"));
     }
 
     @Test
     public void shouldGetTheErrorValueFromAFailure() throws Exception {
         Validation<?, String> val = Validation.failure("woops");
-        assertThat(val, ValidatorMatchers.hasErrorValue("woops"));
+        assertThat(val, ValidationMatchers.hasErrorValue("woops"));
     }
 
     @Test(expected = NoSuchElementException.class)

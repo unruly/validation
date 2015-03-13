@@ -1,6 +1,6 @@
 package com.unrulymedia.util;
 
-import com.unrulymedia.util.testutils.ValidatorMatchers;
+import com.unrulymedia.util.testutils.ValidationMatchers;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -14,15 +14,15 @@ public class ValidationToAndFromOptionalTest {
     @Test
     public void shouldCreateASuccessFromNonEmptyOptional() throws Exception {
         Validation<String, NoSuchElementException> validation = Validation.from(Optional.of("hello!"));
-        assertThat(validation, ValidatorMatchers.isSuccessNotFailure());
-        assertThat(validation, ValidatorMatchers.hasValue("hello!"));
+        assertThat(validation, ValidationMatchers.isSuccessNotFailure());
+        assertThat(validation, ValidationMatchers.hasValue("hello!"));
     }
 
     @Test
     public void shouldCreateAFailureFromEmptyOptional() throws Exception {
         Validation<String, NoSuchElementException> validation = Validation.from(Optional.empty());
-        assertThat(validation, ValidatorMatchers.isFailureNotSuccess());
-        assertThat(validation, ValidatorMatchers.hasErrorValueWhichIsAnException(new NoSuchElementException()));
+        assertThat(validation, ValidationMatchers.isFailureNotSuccess());
+        assertThat(validation, ValidationMatchers.hasErrorValueWhichIsAnException(new NoSuchElementException()));
     }
 
     @Test

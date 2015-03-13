@@ -1,6 +1,6 @@
 package com.unrulymedia.util;
 
-import com.unrulymedia.util.testutils.ValidatorMatchers;
+import com.unrulymedia.util.testutils.ValidationMatchers;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class ValidationCreationTest {
     @Test
     public void shouldCreateASuccess() throws Exception {
         Validation<String, ?> val = Validation.success("woot");
-        assertThat(val, ValidatorMatchers.isSuccessNotFailure());
+        assertThat(val, ValidationMatchers.isSuccessNotFailure());
     }
 
     @Test(expected = NullPointerException.class)
@@ -24,14 +24,14 @@ public class ValidationCreationTest {
     @Test
     public void shouldCreateAFailure() throws Exception {
         Validation<?, String> val = Validation.failure("awww");
-        assertThat(val, ValidatorMatchers.isFailureNotSuccess());
-        assertThat(val, ValidatorMatchers.hasErrorValue("awww"));
+        assertThat(val, ValidationMatchers.isFailureNotSuccess());
+        assertThat(val, ValidationMatchers.hasErrorValue("awww"));
     }
 
     @Test
     public void shouldBeSuccessIfGivenFunction() throws Exception {
         Validation<String, ? extends Exception> validation = Validation.tryTo(() -> "yay!");
-        assertThat(validation, ValidatorMatchers.isSuccessNotFailure());
+        assertThat(validation, ValidationMatchers.isSuccessNotFailure());
     }
 
     @Test
@@ -39,15 +39,15 @@ public class ValidationCreationTest {
         Validation<String, Exception> validation = Validation.tryTo(() -> {
             throw new IOException("oh noes");
         });
-        assertThat(validation, ValidatorMatchers.isFailureNotSuccess());
-        assertThat(validation, ValidatorMatchers.hasErrorValueWhichIsAnException(new IOException("oh noes")));
+        assertThat(validation, ValidationMatchers.isFailureNotSuccess());
+        assertThat(validation, ValidationMatchers.hasErrorValueWhichIsAnException(new IOException("oh noes")));
     }
 
     @Test
     public void shouldBeFailureIfGivenNullReturningFunction() throws Exception {
         Validation<?, Exception> objectValidation = Validation.tryTo(() -> null);
-        assertThat(objectValidation, ValidatorMatchers.isFailureNotSuccess());
-        assertThat(objectValidation, ValidatorMatchers.hasErrorValueWhichIsAnException(new NullPointerException()));
+        assertThat(objectValidation, ValidationMatchers.isFailureNotSuccess());
+        assertThat(objectValidation, ValidationMatchers.hasErrorValueWhichIsAnException(new NullPointerException()));
     }
 
 

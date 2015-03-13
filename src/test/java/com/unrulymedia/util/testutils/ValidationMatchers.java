@@ -5,7 +5,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-public class ValidatorMatchers {
+public class ValidationMatchers {
     public static <T, U> Matcher<? super Validation<? extends T,? extends U>> isFailureNotSuccess() {
         return new TypeSafeMatcher<Validation<? extends T,? extends U>>() {
             @Override

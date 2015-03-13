@@ -37,21 +37,7 @@ public class Validator<T,U> {
         return new Validator<>(newValidatorPairs);
     }
 
-    public Validation<T,U> validate(T value) {/*
-        Validation<T, List<U>> success = Validation.success(value);
-
-       List<U> errors = validatorPairs.stream().map(pair -> {
-            try {if(pair.predicate.test(value)) {
-                return Validation.<T,U>success(value);
-            } else {
-                return Validation.<T,U>failure(pair.error);
-            }} catch(Exception e) {
-                return Validation.<T,U>failure(pair.error);
-            }
-                }).filter(Validation::isFailure).map(Validation::getErrors).collect(Collectors.toList());
-
-        return errors.isEmpty() ? success : Validation.failure(errors);*/
-
+    public Validation<T,U> validate(T value) {
         return validatorPairs
                 .stream()
                 .map(pair -> pair.predicate.test(value) ? Validation.<T, U>success(value) : Validation.<T, U>failure(pair.error))

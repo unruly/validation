@@ -2,7 +2,6 @@ package com.unrulymedia.util.examples;
 
 import com.unrulymedia.util.Validation;
 import com.unrulymedia.util.Validator;
-import com.unrulymedia.util.function.ExceptionalPredicate;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -10,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.unrulymedia.util.testutils.ValidatorMatchers.*;
+import static com.unrulymedia.util.testutils.ValidationMatchers.*;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
