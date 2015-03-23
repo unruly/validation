@@ -10,6 +10,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
+
 public final class Validation<T,S> {
     private final Optional<T> value;
     private final List<S> errors;
@@ -28,7 +30,7 @@ public final class Validation<T,S> {
     }
 
     public static <U,V> Validation<U,V> failure(V error) {
-        return new Validation<>(null, Arrays.asList(error));
+        return new Validation<>(null, asList(error));
     }
 
     public static <U,V> Validation<U,V> failure(List<V> error) {
@@ -142,43 +144,84 @@ public final class Validation<T,S> {
     }
 
     public interface IntegerValidationSupplier<E> extends Supplier<Validation<Integer,E>> {}
-    public static <E> Validation<Integer,E> compose(IntegerValidationSupplier<E> first, IntegerValidationSupplier<E> second) {
-        return first.get().compose(second.get(),(a,b) -> a + b);
+    @SafeVarargs
+    public static <E> Validation<Integer,E> compose(IntegerValidationSupplier<E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1,v2) -> v1.compose(v2, (a,b) -> a + b))
+                .get();
     }
 
     public interface LongValidationSupplier<E> extends Supplier<Validation<Long,E>> {}
-    public static <E> Validation<Long,E> compose(LongValidationSupplier<E> first, LongValidationSupplier<E> second) {
-        return first.get().compose(second.get(),(a,b) -> a + b);
+    @SafeVarargs
+    public static <E> Validation<Long,E> compose(LongValidationSupplier<E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a + b))
+                .get();
     }
 
     public interface FloatValidationSupplier<E> extends Supplier<Validation<Float,E>> {}
-    public static <E> Validation<Float,E> compose(FloatValidationSupplier<E> first, FloatValidationSupplier<E> second) {
-        return first.get().compose(second.get(),(a,b) -> a + b);
+    @SafeVarargs
+    public static <E> Validation<Float,E> compose(FloatValidationSupplier<E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a + b))
+                .get();
     }
 
     public interface DoubleValidationSupplier<E> extends Supplier<Validation<Double,E>> {}
-    public static <E> Validation<Double,E> compose(DoubleValidationSupplier<E> first, DoubleValidationSupplier<E> second) {
-        return first.get().compose(second.get(),(a,b) -> a + b);
+    @SafeVarargs
+    public static <E> Validation<Double,E> compose(DoubleValidationSupplier<E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a + b))
+                .get();
+    }
+
+    public interface BooleanValidationSupplier<E> extends Supplier<Validation<Boolean,E>> {}
+    @SafeVarargs
+    public static <E> Validation<Boolean,E> compose(BooleanValidationSupplier<E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a && b))
+                .get();
     }
 
     public interface StringValidationSupplier<E> extends Supplier<Validation<String,E>> {}
-    public static <E> Validation<String,E> compose(StringValidationSupplier<E> first, StringValidationSupplier<E> second) {
-        return first.get().compose(second.get(),(a,b) -> a + b);
+    @SafeVarargs
+    public static <E> Validation<String,E> compose(StringValidationSupplier<E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a + b))
+                .get();
     }
 
     public interface ListValidationSupplier<T,E> extends Supplier<Validation<List<T>,E>> {}
-    public static <T,E> Validation<List<T>,E> compose(ListValidationSupplier<T,E> first, ListValidationSupplier<T,E> second) {
-        return first.get().compose(second.get(),(a,b) -> Stream.concat(a.stream(),b.stream()).collect(Collectors.toList()));
+    @SafeVarargs
+    public static <T,E> Validation<List<T>,E> compose(ListValidationSupplier<T,E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> Stream.concat(a.stream(), b.stream()).collect(Collectors.toList())))
+                .get();
     }
 
     public interface SetValidationSupplier<T,E> extends Supplier<Validation<Set<T>,E>> {}
-    public static <T,E> Validation<Set<T>,E> compose(SetValidationSupplier<T,E> first, SetValidationSupplier<T,E> second) {
-        return first.get().compose(second.get(),(a,b) -> Stream.concat(a.stream(),b.stream()).collect(Collectors.toSet()));
+    @SafeVarargs
+    public static <T,E> Validation<Set<T>,E> compose(SetValidationSupplier<T,E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> Stream.concat(a.stream(), b.stream()).collect(Collectors.toSet())))
+                .get();
     }
 
     public interface MapValidationSupplier<K,V,E> extends Supplier<Validation<Map<K,V>,E>> {}
-    public static <K,V,E> Validation<Map<K,V>,E> compose(MapValidationSupplier<K,V,E> first, MapValidationSupplier<K,V,E> second) {
-        return first.get().compose(second.get(), (a, b) -> Stream.concat(a.entrySet().stream(), b.entrySet().stream()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (c, d) -> d)));
+    @SafeVarargs
+    public static <K,V,E> Validation<Map<K,V>,E> compose(MapValidationSupplier<K,V,E> ...  validationSuppliers) {
+        return asList(validationSuppliers).stream()
+                .map(Supplier::get)
+                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> Stream.of(a, b).map(Map::entrySet).flatMap(Collection::stream).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (c, d) -> d))))
+                .get();
     }
 
     @Override
