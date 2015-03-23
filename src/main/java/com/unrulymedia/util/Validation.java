@@ -10,8 +10,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
-
 public final class Validation<T,S> {
     private final Optional<T> value;
     private final List<S> errors;
@@ -140,7 +138,7 @@ public final class Validation<T,S> {
         if(this.isFailure()) {
             return this;
         }
-        return Validation.success(f.apply(this.get(),that.get()));
+        return Validation.success(f.apply(this.get(), that.get()));
     }
 
     public interface IntegerValidationSupplier<E> extends Supplier<Validation<Integer,E>> {}
@@ -166,6 +164,21 @@ public final class Validation<T,S> {
     public interface StringValidationSupplier<E> extends Supplier<Validation<String,E>> {}
     public static <E> Validation<String,E> compose(StringValidationSupplier<E> first, StringValidationSupplier<E> second) {
         return first.get().compose(second.get(),(a,b) -> a + b);
+    }
+
+    public interface ListValidationSupplier<T,E> extends Supplier<Validation<List<T>,E>> {}
+    public static <T,E> Validation<List<T>,E> compose(ListValidationSupplier<T,E> first, ListValidationSupplier<T,E> second) {
+        return first.get().compose(second.get(),(a,b) -> Stream.concat(a.stream(),b.stream()).collect(Collectors.toList()));
+    }
+
+    public interface SetValidationSupplier<T,E> extends Supplier<Validation<Set<T>,E>> {}
+    public static <T,E> Validation<Set<T>,E> compose(SetValidationSupplier<T,E> first, SetValidationSupplier<T,E> second) {
+        return first.get().compose(second.get(),(a,b) -> Stream.concat(a.stream(),b.stream()).collect(Collectors.toSet()));
+    }
+
+    public interface MapValidationSupplier<K,V,E> extends Supplier<Validation<Map<K,V>,E>> {}
+    public static <K,V,E> Validation<Map<K,V>,E> compose(MapValidationSupplier<K,V,E> first, MapValidationSupplier<K,V,E> second) {
+        return first.get().compose(second.get(), (a, b) -> Stream.concat(a.entrySet().stream(), b.entrySet().stream()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (c, d) -> d)));
     }
 
     @Override
