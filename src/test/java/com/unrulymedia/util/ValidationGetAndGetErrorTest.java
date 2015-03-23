@@ -31,13 +31,6 @@ public class ValidationGetAndGetErrorTest {
         val.get();
     }
 
-    @Ignore
-    @Test(expected = NoSuchElementException.class)
-    public void shouldThrowIfGetErrorASuccess() throws Exception {
-        Validation<String, ?> val = Validation.success("woot");
-        val.getErrors();
-    }
-
     @Test
     public void shouldHaveEmptyErrorsIfSuccess() throws Exception {
         Validation<String, ?> val = Validation.success("woot");
