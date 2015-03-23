@@ -37,6 +37,7 @@ public final class Validation<T,S> {
         return new Validation<>(null, error);
     }
 
+    @SuppressWarnings("unchecked")
     public static <U, V extends Exception> Validation<U,V> tryTo(ExceptionalSupplier<U,V> f) {
         try {
             return Validation.<U,V>success(f.get());
