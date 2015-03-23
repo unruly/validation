@@ -10,6 +10,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+
 public final class Validation<T,S> {
     private final Optional<T> value;
     private final List<S> errors;
@@ -139,6 +141,31 @@ public final class Validation<T,S> {
             return this;
         }
         return Validation.success(f.apply(this.get(),that.get()));
+    }
+
+    public interface IntegerValidationSupplier<E> extends Supplier<Validation<Integer,E>> {}
+    public static <E> Validation<Integer,E> compose(IntegerValidationSupplier<E> first, IntegerValidationSupplier<E> second) {
+        return first.get().compose(second.get(),(a,b) -> a + b);
+    }
+
+    public interface LongValidationSupplier<E> extends Supplier<Validation<Long,E>> {}
+    public static <E> Validation<Long,E> compose(LongValidationSupplier<E> first, LongValidationSupplier<E> second) {
+        return first.get().compose(second.get(),(a,b) -> a + b);
+    }
+
+    public interface FloatValidationSupplier<E> extends Supplier<Validation<Float,E>> {}
+    public static <E> Validation<Float,E> compose(FloatValidationSupplier<E> first, FloatValidationSupplier<E> second) {
+        return first.get().compose(second.get(),(a,b) -> a + b);
+    }
+
+    public interface DoubleValidationSupplier<E> extends Supplier<Validation<Double,E>> {}
+    public static <E> Validation<Double,E> compose(DoubleValidationSupplier<E> first, DoubleValidationSupplier<E> second) {
+        return first.get().compose(second.get(),(a,b) -> a + b);
+    }
+
+    public interface StringValidationSupplier<E> extends Supplier<Validation<String,E>> {}
+    public static <E> Validation<String,E> compose(StringValidationSupplier<E> first, StringValidationSupplier<E> second) {
+        return first.get().compose(second.get(),(a,b) -> a + b);
     }
 
     @Override
