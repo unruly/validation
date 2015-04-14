@@ -85,6 +85,14 @@ public final class Validation<T,S> {
         return value;
     }
 
+    public Stream<T> stream() {
+        if(isSuccess()) {
+            return Stream.of(value.get());
+        } else {
+            return Stream.<T>empty();
+        }
+    }
+
     public <U> Validation<U, ?> map(ExceptionalFunction<? super T, ? extends U, ? extends Exception> mapper) {
         Objects.requireNonNull(mapper);
         if(isFailure()) {
