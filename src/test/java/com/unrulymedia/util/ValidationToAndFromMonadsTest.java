@@ -1,12 +1,11 @@
 package com.unrulymedia.util;
 
-import com.unrulymedia.util.testutils.FiniteStreamMatcher;
+import com.unrulymedia.util.testutils.StreamMatchers;
 import com.unrulymedia.util.testutils.ValidationMatchers;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,12 +43,12 @@ public class ValidationToAndFromMonadsTest {
     @Test
     public void shouldCreateAnEmptyStreamFromFailure() throws Exception {
         Validation<Integer, String> validation = Validation.failure("meh");
-        assertThat(validation.stream(), FiniteStreamMatcher.hasSameItems(Stream.empty()));
+        assertThat(validation.stream(), StreamMatchers.empty());
     }
 
     @Test
     public void shouldCreateASingletonStreamOfValueIfSuccess() throws Exception {
         Validation<String, Object> validation = Validation.success("Yay!");
-        assertThat(validation.stream(),FiniteStreamMatcher.hasSameItems(Stream.of("Yay!")));
+        assertThat(validation.stream(), StreamMatchers.contains("Yay!"));
     }
 }
