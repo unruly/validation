@@ -5,7 +5,7 @@ import com.unrulymedia.util.function.ExceptionalPredicate;
 import com.unrulymedia.util.function.ExceptionalSupplier;
 
 import java.util.*;
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -138,7 +138,7 @@ public final class Validation<T,S> {
         }
     }
 
-    public Validation<T,S> compose(Validation<T,S> that, BiFunction<T,T,T> f) {
+    public Validation<T,S> compose(Validation<T,S> that, BinaryOperator<T> f) {
         if(this.isFailure() && that.isFailure()) {
             List<S> composedErrors = Stream.concat(this.getErrors().stream(),that.getErrors().stream()).collect(Collectors.toList());
             return failure(composedErrors);
