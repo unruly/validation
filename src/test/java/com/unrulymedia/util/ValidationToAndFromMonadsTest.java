@@ -1,5 +1,6 @@
 package com.unrulymedia.util;
 
+import com.unrulymedia.util.testutils.OptionalMatchers;
 import com.unrulymedia.util.testutils.StreamMatchers;
 import com.unrulymedia.util.testutils.ValidationMatchers;
 import org.junit.Test;
@@ -7,6 +8,8 @@ import org.junit.Test;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static com.unrulymedia.util.testutils.OptionalMatchers.contains;
+import static com.unrulymedia.util.testutils.OptionalMatchers.empty;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -30,14 +33,14 @@ public class ValidationToAndFromMonadsTest {
     public void shouldCreateANonEmptyOptionalFromASuccess() throws Exception {
         Validation<String,String> success = Validation.success("woop");
         Optional<String> opt = success.toOptional();
-        assertThat(opt.get(), is("woop"));
+        assertThat(opt, contains("woop"));
     }
 
     @Test
     public void shouldCreateEmptyOptionalFromFailure() throws Exception {
         Validation<Object, String> validation = Validation.failure("meh");
         Optional<Object> optional = validation.toOptional();
-        assertThat(optional,is(Optional.empty()));
+        assertThat(optional, empty());
     }
 
     @Test
