@@ -5,6 +5,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.*;
 
 import static org.junit.Assert.assertThat;
@@ -521,7 +522,7 @@ public class StreamMatchers {
         }
     }
 
-    private static class IntArrayIterator implements Iterator<Integer> {
+    private static class IntArrayIterator implements PrimitiveIterator.OfInt {
         private final int[] expected;
         private int currentPos = 0;
         
@@ -535,12 +536,12 @@ public class StreamMatchers {
         }
 
         @Override
-        public Integer next() {
+        public int nextInt() {
             return expected[currentPos++];
         }
     }
 
-    private static class LongArrayIterator implements Iterator<Long> {
+    private static class LongArrayIterator implements PrimitiveIterator.OfLong {
         private final long[] expected;
         private int currentPos = 0;
 
@@ -554,12 +555,12 @@ public class StreamMatchers {
         }
 
         @Override
-        public Long next() {
+        public long nextLong() {
             return expected[currentPos++];
         }
     }
 
-    private static class DoubleArrayIterator implements Iterator<Double> {
+    private static class DoubleArrayIterator implements PrimitiveIterator.OfDouble {
         private final double[] expected;
         private int currentPos = 0;
 
@@ -573,7 +574,7 @@ public class StreamMatchers {
         }
 
         @Override
-        public Double next() {
+        public double nextDouble() {
             return expected[currentPos++];
         }
     }
