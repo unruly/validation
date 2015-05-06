@@ -79,6 +79,49 @@ public class StreamMatchers {
         };
     }
 
+    public static <T> Matcher<Stream<T>> startsWithAll(Matcher<T> matcher, long limit) {
+        return new TypeSafeMatcher<Stream<T>>() {
+            private T nonMatching;
+
+            @Override
+            protected boolean matchesSafely(Stream<T> actual) {
+                return actual.peek(i -> nonMatching = i).limit(limit).allMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("All to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(Stream<T> actual, Description mismatchDescription) {
+                mismatchDescription.appendText("Item failed to match: ").appendValue(nonMatching);
+            }
+        };
+    }
+
+    public static <T> Matcher<Stream<T>> startsWithAny(Matcher<T> matcher, long limit) {
+        return new TypeSafeMatcher<Stream<T>>() {
+            List<T> accumulator = new LinkedList<>();
+
+            @Override
+            protected boolean matchesSafely(Stream<T> actual) {
+                return actual.peek(accumulator::add).limit(limit).anyMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Any to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(Stream<T> actual, Description mismatchDescription) {
+                mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
+            }
+        };
+
+    }
+
     @SafeVarargs
     public static <T,S extends BaseStream<T,S>> Matcher<BaseStream<T,S>> contains(T... expected) {
         return new BaseStreamMatcher<T,BaseStream<T,S>>() {
@@ -116,13 +159,13 @@ public class StreamMatchers {
             List<T> accumulator = new LinkedList<>();
 
             @Override
-            public void describeTo(Description description) {
-                description.appendText("Any to match ").appendValue(matcher);
+            protected boolean matchesSafely(Stream<T> actual) {
+                return actual.peek(accumulator::add).anyMatch(matcher::matches);
             }
 
             @Override
-            protected boolean matchesSafely(Stream<T> actual) {
-                return actual.peek(accumulator::add).anyMatch(matcher::matches);
+            public void describeTo(Description description) {
+                description.appendText("Any to match ").appendValue(matcher);
             }
 
             @Override

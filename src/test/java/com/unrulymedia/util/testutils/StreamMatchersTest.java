@@ -1,6 +1,7 @@
 package com.unrulymedia.util.testutils;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.util.stream.BaseStream;
@@ -155,6 +156,25 @@ public class StreamMatchersTest {
         testFailingMatcher(matcher,testData,"Stream of [<0>,<1>,<2>,<3>,<4>,<5>]", "Stream of [<8>,<9>]");
     }
 
+    @Test
+    public void startsWithAll_success() throws Exception {
+        assertThat(Stream.generate(() -> 10), StreamMatchers.startsWithAll(Matchers.equalTo(10),100));
+    }
+
+    @Test
+    public void startsWithAll_fail() throws Exception {
+        testFailingMatcher(StreamMatchers.startsWithAll(Matchers.equalTo(10), 100), Stream.generate(() -> 11), "All to match <<10>>", "Item failed to match: <11>");
+    }
+
+    @Test
+    public void startsWithAny_success() throws Exception {
+        assertThat(Stream.iterate(0, i -> i + 1), StreamMatchers.startsWithAny(Matchers.equalTo(10), 100));
+    }
+
+    @Test
+    public void startsWithAny_fail() throws Exception {
+        testFailingMatcher(StreamMatchers.startsWithAny(Matchers.equalTo(-1), 10),Stream.iterate(0, i -> i + 1), "Any to match <<-1>>", "None of these items matched: [<0>,<1>,<2>,<3>,<4>,<5>,<6>,<7>,<8>,<9>]");
+    }
 
     private <S> void testFailingMatcher(Matcher<S> matcher, S testData, String expectedDescription, String actualDescription) {
         try {
