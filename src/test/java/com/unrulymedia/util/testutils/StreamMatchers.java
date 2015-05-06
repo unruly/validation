@@ -100,6 +100,69 @@ public class StreamMatchers {
         };
     }
 
+    public static Matcher<LongStream> startsWithAllLong(Matcher<Long> matcher, long limit) {
+        return new TypeSafeMatcher<LongStream>() {
+            private long nonMatching;
+
+            @Override
+            protected boolean matchesSafely(LongStream actual) {
+                return actual.peek(i -> nonMatching = i).limit(limit).allMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("All to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(LongStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("Item failed to match: ").appendValue(nonMatching);
+            }
+        };
+    }
+
+    public static Matcher<IntStream> startsWithAllInt(Matcher<Integer> matcher, long limit) {
+        return new TypeSafeMatcher<IntStream>() {
+            private int nonMatching;
+
+            @Override
+            protected boolean matchesSafely(IntStream actual) {
+                return actual.peek(i -> nonMatching = i).limit(limit).allMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("All to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(IntStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("Item failed to match: ").appendValue(nonMatching);
+            }
+        };
+    }
+
+    public static Matcher<DoubleStream> startsWithAllDouble(Matcher<Double> matcher, long limit) {
+        return new TypeSafeMatcher<DoubleStream>() {
+            private double nonMatching;
+
+            @Override
+            protected boolean matchesSafely(DoubleStream actual) {
+                return actual.peek(i -> nonMatching = i).limit(limit).allMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("All to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(DoubleStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("Item failed to match: ").appendValue(nonMatching);
+            }
+        };
+    }
+
     public static <T> Matcher<Stream<T>> startsWithAny(Matcher<T> matcher, long limit) {
         return new TypeSafeMatcher<Stream<T>>() {
             List<T> accumulator = new LinkedList<>();
@@ -119,7 +182,69 @@ public class StreamMatchers {
                 mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
             }
         };
+    }
 
+    public static Matcher<LongStream> startsWithAnyLong(Matcher<Long> matcher, long limit) {
+        return new TypeSafeMatcher<LongStream>() {
+            List<Long> accumulator = new LinkedList<>();
+
+            @Override
+            protected boolean matchesSafely(LongStream actual) {
+                return actual.peek(accumulator::add).limit(limit).anyMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Any to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(LongStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
+            }
+        };
+    }
+
+    public static Matcher<DoubleStream> startsWithAnyDouble(Matcher<Double> matcher, long limit) {
+        return new TypeSafeMatcher<DoubleStream>() {
+            List<Double> accumulator = new LinkedList<>();
+
+            @Override
+            protected boolean matchesSafely(DoubleStream actual) {
+                return actual.peek(accumulator::add).limit(limit).anyMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Any to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(DoubleStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
+            }
+        };
+    }
+
+    public static Matcher<IntStream> startsWithAnyInt(Matcher<Integer> matcher, long limit) {
+        return new TypeSafeMatcher<IntStream>() {
+            List<Integer> accumulator = new LinkedList<>();
+
+            @Override
+            protected boolean matchesSafely(IntStream actual) {
+                return actual.peek(accumulator::add).limit(limit).anyMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Any to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(IntStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
+            }
+        };
     }
 
     @SafeVarargs
@@ -154,6 +279,69 @@ public class StreamMatchers {
         };
     }
 
+    public static Matcher<IntStream> allMatchInt(Matcher<Integer> matcher) {
+        return new TypeSafeMatcher<IntStream>() {
+            private int nonMatching;
+
+            @Override
+            protected boolean matchesSafely(IntStream actual) {
+                return actual.peek(i -> nonMatching = i).allMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("All to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(IntStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("Item failed to match: ").appendValue(nonMatching);
+            }
+        };
+    }
+
+    public static Matcher<LongStream> allMatchLong(Matcher<Long> matcher) {
+        return new TypeSafeMatcher<LongStream>() {
+            private long nonMatching;
+
+            @Override
+            protected boolean matchesSafely(LongStream actual) {
+                return actual.peek(i -> nonMatching = i).allMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("All to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(LongStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("Item failed to match: ").appendValue(nonMatching);
+            }
+        };
+    }
+
+    public static Matcher<DoubleStream> allMatchDouble(Matcher<Double> matcher) {
+        return new TypeSafeMatcher<DoubleStream>() {
+            private double nonMatching;
+
+            @Override
+            protected boolean matchesSafely(DoubleStream actual) {
+                return actual.peek(i -> nonMatching = i).allMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("All to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(DoubleStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("Item failed to match: ").appendValue(nonMatching);
+            }
+        };
+    }
+
     public static <T> Matcher<Stream<T>> anyMatch(Matcher<T> matcher) {
         return new TypeSafeMatcher<Stream<T>>() {
             List<T> accumulator = new LinkedList<>();
@@ -170,6 +358,69 @@ public class StreamMatchers {
 
             @Override
             protected void describeMismatchSafely(Stream<T> actual, Description mismatchDescription) {
+                mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
+            }
+        };
+    }
+
+    public static Matcher<LongStream> anyMatchLong(Matcher<Long> matcher) {
+        return new TypeSafeMatcher<LongStream>() {
+            List<Long> accumulator = new LinkedList<>();
+
+            @Override
+            protected boolean matchesSafely(LongStream actual) {
+                return actual.peek(accumulator::add).anyMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Any to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(LongStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
+            }
+        };
+    }
+
+    public static Matcher<DoubleStream> anyMatchDouble(Matcher<Double> matcher) {
+        return new TypeSafeMatcher<DoubleStream>() {
+            List<Double> accumulator = new LinkedList<>();
+
+            @Override
+            protected boolean matchesSafely(DoubleStream actual) {
+                return actual.peek(accumulator::add).anyMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Any to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(DoubleStream actual, Description mismatchDescription) {
+                mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
+            }
+        };
+    }
+
+    public static Matcher<IntStream> anyMatchInt(Matcher<Integer> matcher) {
+        return new TypeSafeMatcher<IntStream>() {
+            List<Integer> accumulator = new LinkedList<>();
+
+            @Override
+            protected boolean matchesSafely(IntStream actual) {
+                return actual.peek(accumulator::add).anyMatch(matcher::matches);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Any to match ").appendValue(matcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(IntStream actual, Description mismatchDescription) {
                 mismatchDescription.appendText("None of these items matched: ").appendValueList("[",",","]",accumulator);
             }
         };
