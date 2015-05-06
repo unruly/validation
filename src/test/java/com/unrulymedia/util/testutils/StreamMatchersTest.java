@@ -1,9 +1,6 @@
 package com.unrulymedia.util.testutils;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-import org.hamcrest.StringDescription;
 import org.junit.Test;
 
 import java.util.stream.BaseStream;
@@ -11,10 +8,13 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.unrulymedia.util.testutils.StreamMatchers.*;
+import static com.unrulymedia.util.testutils.StreamMatchers.equalTo;
+import static com.unrulymedia.util.testutils.StreamMatchers.startsWith;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -61,12 +61,7 @@ public class StreamMatchersTest {
 
     @Test
     public void nonEmptyStreamIsNotEmpty() throws Exception {
-        try {
-            assertThat(Stream.of(3), StreamMatchers.empty());
-            fail();
-        } catch (AssertionError e) {
-            assertThat(e.toString(), containsString("A non empty Stream starting with <3>"));
-        }
+        testFailingMatcher(empty(),Stream.of(3),"An empty Stream","A non empty Stream starting with <3>");
     }
 
     @Test
@@ -91,36 +86,36 @@ public class StreamMatchersTest {
 
     @Test
     public void allMatch_success() throws Exception {
-        assertThat(Stream.of("bar","baz"),allMatch(Matchers.containsString("a")));
+        assertThat(Stream.of("bar","baz"),allMatch(containsString("a")));
     }
 
     @Test
     public void allMatch_failure() throws Exception {
-        Matcher<Stream<String>> matcher = StreamMatchers.allMatch(Matchers.containsString("a"));
+        Matcher<Stream<String>> matcher = StreamMatchers.allMatch(containsString("a"));
         Stream<String> testData = Stream.of("bar", "bar", "foo", "grault", "garply", "waldo");
         testFailingMatcher(matcher, testData, "All to match <a string containing \"a\">", "Item failed to match: \"foo\"");
     }
 
     @Test
     public void allMatch_empty() throws Exception {
-        assertThat(Stream.empty(),allMatch(Matchers.containsString("foo")));
+        assertThat(Stream.empty(),allMatch(containsString("foo")));
     }
 
     @Test
     public void anyMatch_success() throws Exception {
-        assertThat(Stream.of("bar", "bar", "foo", "grault", "garply", "waldo"),StreamMatchers.anyMatch(Matchers.containsString("ald")));
+        assertThat(Stream.of("bar", "bar", "foo", "grault", "garply", "waldo"),StreamMatchers.anyMatch(containsString("ald")));
     }
 
     @Test
     public void anyMatch_failure() throws Exception {
-        Matcher<Stream<String>> matcher = StreamMatchers.anyMatch(Matchers.containsString("z"));
+        Matcher<Stream<String>> matcher = StreamMatchers.anyMatch(containsString("z"));
         Stream<String> testData = Stream.of("bar", "bar", "foo", "grault", "garply", "waldo");
         testFailingMatcher(matcher,testData,"Any to match <a string containing \"z\"","None of these items matched: [\"bar\",\"bar\",\"foo\",\"grault\",\"garply\",\"waldo\"]");
     }
 
     @Test
     public void anyMatch_empty() throws Exception {
-        assertThat(Stream.empty(),not(anyMatch(Matchers.containsString("foo"))));
+        assertThat(Stream.empty(),not(anyMatch(containsString("foo"))));
     }
 
     @Test
@@ -161,13 +156,14 @@ public class StreamMatchersTest {
     }
 
 
-    private void testFailingMatcher(Matcher matcher, BaseStream testData, String expectedDescription, String actualDescription) {
-        assertFalse(matcher.matches(testData));
-        Description description = new StringDescription();
-        description.appendDescriptionOf(matcher);
-        assertThat(description.toString(), containsString(expectedDescription));
-        Description mismatchDescription = new StringDescription();
-        matcher.describeMismatch(testData, mismatchDescription);
-        assertThat(mismatchDescription.toString(), containsString(actualDescription));
+    private <S> void testFailingMatcher(Matcher<S> matcher, S testData, String expectedDescription, String actualDescription) {
+        try {
+            assertThat(testData,matcher);
+            throw new Exception();
+        } catch (AssertionError e) {
+            assertThat(e.toString(), stringContainsInOrder(asList(expectedDescription, actualDescription)));
+        } catch (Exception ignored) {
+            fail();
+        }
     }
 }

@@ -52,7 +52,7 @@ public class StreamMatchers {
         };
     }
 
-    public static <T> Matcher<DoubleStream> startsWith(DoubleStream expected, long limit) {
+    public static Matcher<DoubleStream> startsWith(DoubleStream expected, long limit) {
         return new BaseStreamMatcher<Double,DoubleStream>() {
             @Override
             protected boolean matchesSafely(DoubleStream actual) {
@@ -61,7 +61,7 @@ public class StreamMatchers {
         };
     }
 
-    public static <T> Matcher<IntStream> startsWith(IntStream expected, long limit) {
+    public static Matcher<IntStream> startsWith(IntStream expected, long limit) {
         return new BaseStreamMatcher<Integer,IntStream>() {
             @Override
             protected boolean matchesSafely(IntStream actual) {
@@ -70,7 +70,7 @@ public class StreamMatchers {
         };
     }
 
-    public static <T> Matcher<LongStream> startsWith(LongStream expected, long limit) {
+    public static Matcher<LongStream> startsWith(LongStream expected, long limit) {
         return new BaseStreamMatcher<Long,LongStream>() {
             @Override
             protected boolean matchesSafely(LongStream actual) {
