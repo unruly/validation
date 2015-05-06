@@ -4,6 +4,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -52,12 +53,57 @@ public class OptionalMatchersTest {
     }
 
     @Test
-    public void containsMatcher_failure() throws Exception {
+    public void containsMatcher_failureDiffering() throws Exception {
+        assertThat(Optional.of(100),not(OptionalMatchers.contains(Matchers.lessThanOrEqualTo(19))));
+    }
+
+    @Test
+    public void containsMatcher_failureEmpty() throws Exception {
         assertThat(Optional.empty(),not(OptionalMatchers.contains(Matchers.lessThanOrEqualTo(19))));
     }
 
     @Test
     public void containsMatcher_failureMessage() throws Exception {
         Helper.testFailingMatcher(OptionalMatchers.contains(Matchers.equalTo(4)),Optional.of(2),"Optional with an item that matches<4>","<Optional[2]>");
+    }
+
+    @Test
+    public void emptyInt_success() throws Exception {
+        assertThat(OptionalInt.empty(),OptionalMatchers.emptyInt());
+    }
+
+    @Test
+    public void emptyInt_failure() throws Exception {
+        assertThat(OptionalInt.of(0),not(OptionalMatchers.emptyInt()));
+    }
+
+    @Test
+    public void containsInt_success() throws Exception {
+        assertThat(OptionalInt.of(0),OptionalMatchers.containsInt(0));
+    }
+
+    @Test
+    public void containsInt_failureDiffering() throws Exception {
+        assertThat(OptionalInt.of(0),not(OptionalMatchers.containsInt(1)));
+    }
+
+    @Test
+    public void containsInt_failureEmpty() throws Exception {
+        assertThat(OptionalInt.empty(),not(OptionalMatchers.containsInt(1)));
+    }
+
+    @Test
+    public void containsIntMatcher_success() throws Exception {
+        assertThat(OptionalInt.of(0),OptionalMatchers.containsInt(Matchers.equalTo(0)));
+    }
+
+    @Test
+    public void containsIntMatcher_failureEmpty() throws Exception {
+        assertThat(OptionalInt.empty(),not(OptionalMatchers.containsInt(Matchers.equalTo(1))));
+    }
+
+    @Test
+    public void containsIntMatcher_failureDiffering() throws Exception {
+        assertThat(OptionalInt.of(0),not(OptionalMatchers.containsInt(Matchers.equalTo(1))));
     }
 }
