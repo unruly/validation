@@ -4,6 +4,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
+import java.util.StringJoiner;
 import java.util.stream.BaseStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -13,7 +14,6 @@ import static com.unrulymedia.util.testutils.StreamMatchers.equalTo;
 import static com.unrulymedia.util.testutils.StreamMatchers.startsWith;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -62,7 +62,7 @@ public class StreamMatchersTest {
 
     @Test
     public void empty_Failure() throws Exception {
-        testFailingMatcher(empty(),Stream.of(3),"An empty Stream","A non empty Stream starting with <3>");
+        Helper.testFailingMatcher(empty(), Stream.of(3), "An empty Stream", "A non empty Stream starting with <3>");
     }
 
     @Test
@@ -94,7 +94,7 @@ public class StreamMatchersTest {
     public void allMatch_failure() throws Exception {
         Matcher<Stream<String>> matcher = StreamMatchers.allMatch(containsString("a"));
         Stream<String> testData = Stream.of("bar", "bar", "foo", "grault", "garply", "waldo");
-        testFailingMatcher(matcher, testData, "All to match <a string containing \"a\">", "Item failed to match: \"foo\"");
+        Helper.testFailingMatcher(matcher, testData, "All to match <a string containing \"a\">", "Item failed to match: \"foo\"");
     }
 
     @Test
@@ -111,7 +111,7 @@ public class StreamMatchersTest {
     public void anyMatch_failure() throws Exception {
         Matcher<Stream<String>> matcher = StreamMatchers.anyMatch(containsString("z"));
         Stream<String> testData = Stream.of("bar", "bar", "foo", "grault", "garply", "waldo");
-        testFailingMatcher(matcher,testData,"Any to match <a string containing \"z\"","None of these items matched: [\"bar\",\"bar\",\"foo\",\"grault\",\"garply\",\"waldo\"]");
+        Helper.testFailingMatcher(matcher, testData, "Any to match <a string containing \"z\"", "None of these items matched: [\"bar\",\"bar\",\"foo\",\"grault\",\"garply\",\"waldo\"]");
     }
 
     @Test
@@ -138,7 +138,7 @@ public class StreamMatchersTest {
     public void equalTo_failureMessages() throws Exception {
         Matcher<BaseStream<String, Stream<String>>> matcher = equalTo(Stream.of("a", "b", "c", "d", "e", "f", "g", "h"));
         Stream<String> testData = Stream.of("a", "b", "c", "d", "e");
-        testFailingMatcher(matcher, testData,"Stream of [\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\",\"h\"]","Stream of [\"a\",\"b\",\"c\",\"d\",\"e\"]");
+        Helper.testFailingMatcher(matcher, testData, "Stream of [\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\",\"h\"]", "Stream of [\"a\",\"b\",\"c\",\"d\",\"e\"]");
     }
 
 
@@ -146,14 +146,14 @@ public class StreamMatchersTest {
     public void contains_failureMessages() throws Exception {
         Stream<String> testData = Stream.of("a", "b", "c", "d", "e");
         Matcher<BaseStream<String, Stream<String>>> matcher = contains("a", "b", "c", "d", "e", "f", "g", "h");
-        testFailingMatcher(matcher,testData,"Stream of [\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\",\"h\"]","Stream of [\"a\",\"b\",\"c\",\"d\",\"e\"]");
+        Helper.testFailingMatcher(matcher, testData, "Stream of [\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\",\"h\"]", "Stream of [\"a\",\"b\",\"c\",\"d\",\"e\"]");
     }
 
     @Test
     public void equalToIntStream_failureMessages() throws Exception {
         IntStream testData = IntStream.range(8, 10);
         Matcher<BaseStream<Integer, IntStream>> matcher = equalTo(IntStream.range(0, 6));
-        testFailingMatcher(matcher,testData,"Stream of [<0>,<1>,<2>,<3>,<4>,<5>]", "Stream of [<8>,<9>]");
+        Helper.testFailingMatcher(matcher, testData, "Stream of [<0>,<1>,<2>,<3>,<4>,<5>]", "Stream of [<8>,<9>]");
     }
 
     @Test
@@ -163,7 +163,7 @@ public class StreamMatchersTest {
 
     @Test
     public void startsWithAll_fail() throws Exception {
-        testFailingMatcher(StreamMatchers.startsWithAll(Matchers.equalTo(10), 100), Stream.generate(() -> 11), "All to match <<10>>", "Item failed to match: <11>");
+        Helper.testFailingMatcher(StreamMatchers.startsWithAll(Matchers.equalTo(10), 100), Stream.generate(() -> 11), "All to match <<10>>", "Item failed to match: <11>");
     }
 
     @Test
@@ -173,17 +173,6 @@ public class StreamMatchersTest {
 
     @Test
     public void startsWithAny_fail() throws Exception {
-        testFailingMatcher(StreamMatchers.startsWithAny(Matchers.equalTo(-1), 10),Stream.iterate(0, i -> i + 1), "Any to match <<-1>>", "None of these items matched: [<0>,<1>,<2>,<3>,<4>,<5>,<6>,<7>,<8>,<9>]");
-    }
-
-    private <S> void testFailingMatcher(Matcher<S> matcher, S testData, String expectedDescription, String actualDescription) {
-        try {
-            assertThat(testData,matcher);
-            throw new Exception();
-        } catch (AssertionError e) {
-            assertThat(e.toString(), stringContainsInOrder(asList(expectedDescription, actualDescription)));
-        } catch (Exception ignored) {
-            fail();
-        }
+        Helper.testFailingMatcher(StreamMatchers.startsWithAny(Matchers.equalTo(-1), 10), Stream.iterate(0, i -> i + 1), "Any to match <<-1>>", "None of these items matched: [<0>,<1>,<2>,<3>,<4>,<5>,<6>,<7>,<8>,<9>]");
     }
 }
