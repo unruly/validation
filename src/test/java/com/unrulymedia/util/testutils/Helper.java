@@ -8,11 +8,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class Helper {
-    static <S> void testFailingMatcher(Matcher<S> matcher, S testData, String expectedDescription, String actualDescription) {
+    static <S> void testFailingMatcher(S testData, Matcher<S> matcher, String expectedDescription, String actualDescription) {
         try {
             assertThat(testData,matcher);
             throw new Exception();
         } catch (AssertionError e) {
+            System.out.println(e.getMessage());
             assertThat(e.toString(), stringContainsInOrder(asList(expectedDescription, actualDescription)));
         } catch (Exception ignored) {
             fail();

@@ -23,7 +23,7 @@ public class OptionalMatchersTest {
 
     @Test
     public void empty_failureMessage() throws Exception {
-        Helper.testFailingMatcher(OptionalMatchers.empty(),Optional.of(1),"An empty Optional","<Optional[1]>");
+        Helper.testFailingMatcher(Optional.of(1), OptionalMatchers.empty(), "An empty Optional","<Optional[1]>");
     }
 
     @Test
@@ -44,7 +44,7 @@ public class OptionalMatchersTest {
 
     @Test
     public void contains_failureMessages() throws Exception {
-        Helper.testFailingMatcher(OptionalMatchers.contains(2),Optional.of(1),"Optional[2]","<Optional[1]>");
+        Helper.testFailingMatcher(Optional.of(1), OptionalMatchers.contains(2), "Optional[2]","<Optional[1]>");
     }
 
     @Test
@@ -64,7 +64,7 @@ public class OptionalMatchersTest {
 
     @Test
     public void containsMatcher_failureMessage() throws Exception {
-        Helper.testFailingMatcher(OptionalMatchers.contains(Matchers.equalTo(4)),Optional.of(2),"Optional with an item that matches<4>","<Optional[2]>");
+        Helper.testFailingMatcher(Optional.of(2), OptionalMatchers.contains(Matchers.equalTo(4)), "Optional with an item that matches<4>","<Optional[2]>");
     }
 
     @Test
