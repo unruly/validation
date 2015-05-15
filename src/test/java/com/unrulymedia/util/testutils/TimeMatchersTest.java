@@ -2,7 +2,6 @@ package com.unrulymedia.util.testutils;
 
 import org.junit.Test;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,8 +11,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class TimeMatchersTest {
-
-    private SimpleDateFormat format = new SimpleDateFormat("y-M-d");
 
     private Instant instant2015 = Instant.parse("2015-01-01T00:00:00.00Z");
     private Instant instant2014 = Instant.parse("2014-01-01T00:00:00.00Z");

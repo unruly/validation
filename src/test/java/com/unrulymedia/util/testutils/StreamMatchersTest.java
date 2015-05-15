@@ -4,9 +4,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import java.util.stream.BaseStream;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 import static com.unrulymedia.util.testutils.StreamMatchers.*;
 import static com.unrulymedia.util.testutils.StreamMatchers.contains;
@@ -91,7 +89,28 @@ public class StreamMatchersTest {
     public void allMatch_failure() throws Exception {
         Matcher<Stream<String>> matcher = StreamMatchers.allMatch(containsString("a"));
         Stream<String> testData = Stream.of("bar", "bar", "foo", "grault", "garply", "waldo");
-        Helper.testFailingMatcher(testData, matcher, "All to match <a string containing \"a\">", "Item failed to match: \"foo\"");
+        Helper.testFailingMatcher(testData, matcher, "All to match <a string containing \"a\">", "Item 2 failed to match: \"foo\"");
+    }
+
+    @Test
+    public void allMatchInt_failure() throws Exception {
+        Matcher<IntStream> matcher = StreamMatchers.allMatchInt(Matchers.lessThan(3));
+        IntStream testData = IntStream.range(0,10);
+        Helper.testFailingMatcher(testData, matcher, "All to match <a value less than <3>>", "Item 3 failed to match: <3>");
+    }
+
+    @Test
+    public void allMatchLong_failure() throws Exception {
+        Matcher<LongStream> matcher = StreamMatchers.allMatchLong(Matchers.lessThan(3L));
+        LongStream testData = LongStream.range(0,10);
+        Helper.testFailingMatcher(testData, matcher, "All to match <a value less than <3L>>", "Item 3 failed to match: <3L>");
+    }
+
+    @Test
+    public void allMatchDouble_failure() throws Exception {
+        Matcher<DoubleStream> matcher = StreamMatchers.allMatchDouble(Matchers.lessThan(3d));
+        DoubleStream testData = DoubleStream.iterate(0d,d -> d + 1).limit(10);
+        Helper.testFailingMatcher(testData, matcher, "All to match <a value less than <3.0>>", "Item 3 failed to match: <3.0>");
     }
 
     @Test
@@ -109,6 +128,36 @@ public class StreamMatchersTest {
         Matcher<Stream<String>> matcher = StreamMatchers.anyMatch(containsString("z"));
         Stream<String> testData = Stream.of("bar", "bar", "foo", "grault", "garply", "waldo");
         Helper.testFailingMatcher(testData, matcher, "Any to match <a string containing \"z\"", "None of these items matched: [\"bar\",\"bar\",\"foo\",\"grault\",\"garply\",\"waldo\"]");
+    }
+
+    @Test
+    public void anyMatchInt_success() throws Exception {
+        assertThat(IntStream.range(0,1_000),StreamMatchers.anyMatchInt(Matchers.equalTo(10)));
+    }
+
+    @Test
+    public void anyMatchInt_failure() throws Exception {
+        Helper.testFailingMatcher(IntStream.range(0,5), StreamMatchers.anyMatchInt(Matchers.equalTo(101)), "Any to match <<101>>", "None of these items matched: [<0>,<1>,<2>,<3>,<4>]");
+    }
+
+    @Test
+    public void anyMatchLong_success() throws Exception {
+        assertThat(LongStream.range(0,1_000),StreamMatchers.anyMatchLong(Matchers.equalTo(10L)));
+    }
+
+    @Test
+    public void anyMatchLong_failure() throws Exception {
+        Helper.testFailingMatcher(LongStream.range(0,5), StreamMatchers.anyMatchLong(Matchers.equalTo(101L)), "Any to match <<101L>>", "None of these items matched: [<0L>,<1L>,<2L>,<3L>,<4L>]");
+    }
+
+    @Test
+    public void anyMatchDouble_success() throws Exception {
+        assertThat(DoubleStream.iterate(0d,i -> i + 1),StreamMatchers.anyMatchDouble(Matchers.equalTo(10d)));
+    }
+
+    @Test
+    public void anyMatchDouble_failure() throws Exception {
+        Helper.testFailingMatcher(DoubleStream.iterate(0d,i -> i + 1).limit(5), StreamMatchers.anyMatchDouble(Matchers.equalTo(101d)), "Any to match <<101.0>>", "None of these items matched: [<0.0>,<1.0>,<2.0>,<3.0>,<4.0>]");
     }
 
     @Test
@@ -160,7 +209,37 @@ public class StreamMatchersTest {
 
     @Test
     public void startsWithAll_fail() throws Exception {
-        Helper.testFailingMatcher(Stream.generate(() -> 11), StreamMatchers.startsWithAll(Matchers.equalTo(10), 100), "All to match <<10>>", "Item failed to match: <11>");
+        Helper.testFailingMatcher(Stream.generate(() -> 11), StreamMatchers.startsWithAll(Matchers.equalTo(10), 100), "First 100 to match <<10>>", "Item 0 failed to match: <11>");
+    }
+
+    @Test
+    public void startsWithAllInt_success() throws Exception {
+        assertThat(IntStream.generate(() -> 10), StreamMatchers.startsWithAllInt(Matchers.equalTo(10), 100));
+    }
+
+    @Test
+    public void startsWithAllInt_fail() throws Exception {
+        Helper.testFailingMatcher(IntStream.iterate(0, i -> i + 1), StreamMatchers.startsWithAllInt(Matchers.lessThan(3), 100), "First 100 to match <a value less than <3>>", "Item 3 failed to match: <3>");
+    }
+
+    @Test
+    public void startsWithAllLong_success() throws Exception {
+        assertThat(LongStream.generate(() -> 10), StreamMatchers.startsWithAllLong(Matchers.equalTo(10L), 100));
+    }
+
+    @Test
+    public void startsWithAllLong_fail() throws Exception {
+        Helper.testFailingMatcher(LongStream.iterate(0, i -> i + 1), StreamMatchers.startsWithAllLong(Matchers.lessThan(3L), 100), "First 100 to match <a value less than <3L>>", "Item 3 failed to match: <3L>");
+    }
+
+    @Test
+    public void startsWithAllDouble_success() throws Exception {
+        assertThat(DoubleStream.generate(() -> 10), StreamMatchers.startsWithAllDouble(Matchers.equalTo(10d), 100));
+    }
+
+    @Test
+    public void startsWithAllDouble_fail() throws Exception {
+        Helper.testFailingMatcher(DoubleStream.iterate(0,i -> i + 1), StreamMatchers.startsWithAllDouble(Matchers.lessThan(3d), 100), "First 100 to match <a value less than <3.0>>", "Item 3 failed to match: <3.0>");
     }
 
     @Test
@@ -170,6 +249,36 @@ public class StreamMatchersTest {
 
     @Test
     public void startsWithAny_fail() throws Exception {
-        Helper.testFailingMatcher(Stream.iterate(0, i -> i + 1), StreamMatchers.startsWithAny(Matchers.equalTo(-1), 10), "Any to match <<-1>>", "None of these items matched: [<0>,<1>,<2>,<3>,<4>,<5>,<6>,<7>,<8>,<9>]");
+        Helper.testFailingMatcher(Stream.iterate(0, i -> i + 1), StreamMatchers.startsWithAny(Matchers.equalTo(-1), 10), "Any of first 10 to match <<-1>>", "None of these items matched: [<0>,<1>,<2>,<3>,<4>,<5>,<6>,<7>,<8>,<9>]");
+    }
+
+    @Test
+    public void startsWithAnyInt_success() throws Exception {
+        assertThat(IntStream.iterate(0, i -> i + 1), StreamMatchers.startsWithAnyInt(Matchers.equalTo(10), 100));
+    }
+
+    @Test
+    public void startsWithAnyInt_fail() throws Exception {
+        Helper.testFailingMatcher(IntStream.iterate(0, i -> i + 1), StreamMatchers.startsWithAnyInt(Matchers.equalTo(-1), 10), "Any of first 10 to match <<-1>>", "None of these items matched: [<0>,<1>,<2>,<3>,<4>,<5>,<6>,<7>,<8>,<9>]");
+    }
+
+    @Test
+    public void startsWithAnyLong_success() throws Exception {
+        assertThat(LongStream.iterate(0, i -> i + 1), StreamMatchers.startsWithAnyLong(Matchers.equalTo(10L), 100));
+    }
+
+    @Test
+    public void startsWithAnyLong_fail() throws Exception {
+        Helper.testFailingMatcher(LongStream.iterate(0, i -> i + 1), StreamMatchers.startsWithAnyLong(Matchers.equalTo(-1L), 10), "Any of first 10 to match <<-1L>>", "None of these items matched: [<0L>,<1L>,<2L>,<3L>,<4L>,<5L>,<6L>,<7L>,<8L>,<9L>]");
+    }
+
+    @Test
+    public void startsWithAnyDouble_success() throws Exception {
+        assertThat(DoubleStream.iterate(0, i -> i + 1), StreamMatchers.startsWithAnyDouble(Matchers.equalTo(10d), 100));
+    }
+
+    @Test
+    public void startsWithAnyDouble_fail() throws Exception {
+        Helper.testFailingMatcher(DoubleStream.iterate(0, i -> i + 1), StreamMatchers.startsWithAnyDouble(Matchers.equalTo(-1d), 10), "Any of first 10 to match <<-1.0>>", "None of these items matched: [<0.0>,<1.0>,<2.0>,<3.0>,<4.0>,<5.0>,<6.0>,<7.0>,<8.0>,<9.0>]");
     }
 }
