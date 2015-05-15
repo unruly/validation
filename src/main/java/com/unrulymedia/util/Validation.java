@@ -47,7 +47,7 @@ public final class Validation<T,S> {
     }
 
     public static <U> Validation<U, NoSuchElementException> from(Optional<U> opt) {
-        Validation<U, NoSuchElementException> failure = (Validation.failure(new NoSuchElementException()));
+        Validation<U, NoSuchElementException> failure = (failure(new NoSuchElementException()));
         return opt.map(Validation::<U, NoSuchElementException>success).orElse(failure);
     }
 
@@ -105,7 +105,7 @@ public final class Validation<T,S> {
                 }
                 return new Validation<>(mapped,null);
             } catch (Exception e) {
-                return Validation.failure(e);
+                return failure(e);
             }
         }
     }
@@ -117,9 +117,9 @@ public final class Validation<T,S> {
         } else {
             try {
                 Validation<U, ?> mapped = mapper.apply(value.get());
-                return mapped == null ? Validation.failure(new NullPointerException()) : mapped;
+                return mapped == null ? failure(new NullPointerException()) : mapped;
             } catch (Exception e) {
-                return Validation.failure(e);
+                return failure(e);
             }
         }
     }
@@ -149,7 +149,7 @@ public final class Validation<T,S> {
         if(this.isFailure()) {
             return this;
         }
-        return Validation.success(f.apply(this.get(), that.get()));
+        return success(f.apply(this.get(), that.get()));
     }
 
     public interface IntegerValidationSupplier<E> extends Supplier<Validation<Integer,E>> {}
@@ -157,8 +157,7 @@ public final class Validation<T,S> {
     public static <E> Validation<Integer,E> compose(IntegerValidationSupplier<E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1,v2) -> v1.compose(v2, (a,b) -> a + b))
-                .get();
+                .reduce(success(0), (v1, v2) -> v1.compose(v2, Integer::sum));
     }
 
     public interface LongValidationSupplier<E> extends Supplier<Validation<Long,E>> {}
@@ -166,8 +165,7 @@ public final class Validation<T,S> {
     public static <E> Validation<Long,E> compose(LongValidationSupplier<E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a + b))
-                .get();
+                .reduce(success(0L), (v1, v2) -> v1.compose(v2, Long::sum));
     }
 
     public interface FloatValidationSupplier<E> extends Supplier<Validation<Float,E>> {}
@@ -175,8 +173,7 @@ public final class Validation<T,S> {
     public static <E> Validation<Float,E> compose(FloatValidationSupplier<E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a + b))
-                .get();
+                .reduce(success(0f), (v1, v2) -> v1.compose(v2, Float::sum));
     }
 
     public interface DoubleValidationSupplier<E> extends Supplier<Validation<Double,E>> {}
@@ -184,8 +181,7 @@ public final class Validation<T,S> {
     public static <E> Validation<Double,E> compose(DoubleValidationSupplier<E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a + b))
-                .get();
+                .reduce(success(0d), (v1, v2) -> v1.compose(v2, Double::sum));
     }
 
     public interface BooleanValidationSupplier<E> extends Supplier<Validation<Boolean,E>> {}
@@ -193,8 +189,7 @@ public final class Validation<T,S> {
     public static <E> Validation<Boolean,E> compose(BooleanValidationSupplier<E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a && b))
-                .get();
+                .reduce(success(true), (v1, v2) -> v1.compose(v2, Boolean::logicalAnd));
     }
 
     public interface StringValidationSupplier<E> extends Supplier<Validation<String,E>> {}
@@ -202,8 +197,7 @@ public final class Validation<T,S> {
     public static <E> Validation<String,E> compose(StringValidationSupplier<E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> a + b))
-                .get();
+                .reduce(success(""), (v1, v2) -> v1.compose(v2, String::concat));
     }
 
     public interface ListValidationSupplier<T,E> extends Supplier<Validation<List<T>,E>> {}
@@ -211,8 +205,10 @@ public final class Validation<T,S> {
     public static <T,E> Validation<List<T>,E> compose(ListValidationSupplier<T,E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> Stream.concat(a.stream(), b.stream()).collect(Collectors.toList())))
-                .get();
+                .reduce(success(
+                                Collections.emptyList()),
+                        (v1, v2) -> v1.compose(v2, (a, b) -> Stream.concat(a.stream(), b.stream()).collect(Collectors.toList()))
+                );
     }
 
     public interface SetValidationSupplier<T,E> extends Supplier<Validation<Set<T>,E>> {}
@@ -220,8 +216,9 @@ public final class Validation<T,S> {
     public static <T,E> Validation<Set<T>,E> compose(SetValidationSupplier<T,E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> Stream.concat(a.stream(), b.stream()).collect(Collectors.toSet())))
-                .get();
+                .reduce(success(Collections.emptySet()),
+                        (v1, v2) -> v1.compose(v2, (a, b) -> Stream.concat(a.stream(), b.stream()).collect(Collectors.toSet()))
+                );
     }
 
     public interface MapValidationSupplier<K,V,E> extends Supplier<Validation<Map<K,V>,E>> {}
@@ -229,8 +226,9 @@ public final class Validation<T,S> {
     public static <K,V,E> Validation<Map<K,V>,E> compose(MapValidationSupplier<K,V,E> ...  validationSuppliers) {
         return asList(validationSuppliers).stream()
                 .map(Supplier::get)
-                .reduce((v1, v2) -> v1.compose(v2, (a, b) -> Stream.of(a, b).map(Map::entrySet).flatMap(Collection::stream).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (c, d) -> d))))
-                .get();
+                .reduce(success(Collections.emptyMap()),
+                        (v1, v2) -> v1.compose(v2, (a, b) -> Stream.of(a, b).map(Map::entrySet).flatMap(Collection::stream).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (c, d) -> d)))
+                );
     }
 
     @Override
