@@ -171,6 +171,27 @@ public class StreamMatchersTest {
     }
 
     @Test
+    public void startsWithMatcher_successBothInfinite() throws Exception {
+        assertThat(Stream.iterate(0,i -> i + 1), startsWith(Stream.iterate(0, i -> i + 1), 10));
+    }
+
+    @Test
+    public void startsWithMatcherInt_successBothInfinite() throws Exception {
+        assertThat(IntStream.iterate(0,i -> i + 1), startsWith(IntStream.iterate(0, i -> i + 1), 10));
+    }
+
+    @Test
+    public void startsWithMatcherLong_successBothInfinite() throws Exception {
+        assertThat(LongStream.iterate(0,i -> i + 1), startsWith(LongStream.iterate(0, i -> i + 1), 10));
+    }
+
+    @Test
+    public void startsWithMatcherDouble_successBothInfinite() throws Exception {
+        assertThat(DoubleStream.iterate(0,i -> i + 1), startsWith(DoubleStream.iterate(0, i -> i + 1), 10));
+    }
+
+
+    @Test
     public void startsWithItems_success() throws Exception {
         assertThat(Stream.of("a","b","c","d","e", "f", "g", "h"), startsWith("a", "b", "c", "d", "e"));
     }

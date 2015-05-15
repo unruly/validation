@@ -35,6 +35,20 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream producing the same number of items as the expected Stream,
+     * and producing equal items as expected in the same order.
+     *
+     * For infinite Streams use {@link #startsWith}
+     *
+     * @param expected A BaseStream against which to compare
+     * @param <T> The type of items produced by each BaseStream
+     * @param <S> The type of BaseStream
+     * @see #startsWith
+     * @see #startsWithInt
+     * @see #startsWithLong
+     * @see #startsWithDouble
+     */
     public static <T,S extends BaseStream<T,S>> Matcher<BaseStream<T,S>> equalTo(BaseStream<T, S> expected) {
         return new BaseStreamMatcher<T,BaseStream<T,S>>() {
             @Override
@@ -44,38 +58,83 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of objects where the first limit items from each must be
+     * equal
+     *
+     * @param expected A Stream to check against
+     * @param limit Only check this number of items from actual Stream
+     * @param <T> The type of items produced by each Stream
+     * @see #equalTo
+     * @see #startsWithInt
+     * @see #startsWithLong
+     * @see #startsWithDouble
+     */
     public static <T> Matcher<Stream<T>> startsWith(Stream<T> expected, long limit) {
         return new BaseStreamMatcher<T,Stream<T>>() {
             @Override
             protected boolean matchesSafely(Stream<T> actual) {
-                return remainingItemsEqual(expected.iterator(), actual.limit(limit).iterator());
+                return remainingItemsEqual(expected.limit(limit).iterator(), actual.limit(limit).iterator());
             }
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive doubles where the first limit items from each must be
+     * equal
+     *
+     * @param expected A Stream to check against
+     * @param limit Only check this number of items from actual Stream
+     * @see #equalTo
+     * @see #startsWith
+     * @see #startsWithInt
+     * @see #startsWithLong
+     */
     public static Matcher<DoubleStream> startsWith(DoubleStream expected, long limit) {
         return new BaseStreamMatcher<Double,DoubleStream>() {
             @Override
             protected boolean matchesSafely(DoubleStream actual) {
-                return remainingItemsEqual(expected.iterator(), actual.limit(limit).iterator());
+                return remainingItemsEqual(expected.limit(limit).iterator(), actual.limit(limit).iterator());
             }
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive ints where the first limit items from each must be
+     * equal
+     *
+     * @param expected A Stream to check against
+     * @param limit Only check this number of items from actual Stream
+     * @see #equalTo
+     * @see #startsWith
+     * @see #startsWithLong
+     * @see #startsWithDouble
+     */
     public static Matcher<IntStream> startsWith(IntStream expected, long limit) {
         return new BaseStreamMatcher<Integer,IntStream>() {
             @Override
             protected boolean matchesSafely(IntStream actual) {
-                return remainingItemsEqual(expected.iterator(), actual.limit(limit).iterator());
+                return remainingItemsEqual(expected.limit(limit).iterator(), actual.limit(limit).iterator());
             }
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive ints where the first limit items from each must be
+     * equal
+     *
+     * @param expected A Stream to check against
+     * @param limit Only check this number of items from actual Stream
+     * @see #equalTo
+     * @see #startsWith
+     * @see #startsWithInt
+     * @see #startsWithDouble
+     */
     public static Matcher<LongStream> startsWith(LongStream expected, long limit) {
         return new BaseStreamMatcher<Long,LongStream>() {
             @Override
             protected boolean matchesSafely(LongStream actual) {
-                return remainingItemsEqual(expected.iterator(), actual.limit(limit).iterator());
+                return remainingItemsEqual(expected.limit(limit).iterator(), actual.limit(limit).iterator());
             }
         };
     }
@@ -88,6 +147,16 @@ public class StreamMatchers {
                 .appendValue(matcher);
     }
 
+    /**
+     * A matcher for potentially infinite Streams of objects, the first limit of which must match the given Matcher
+     *
+     * @param matcher A matcher to apply to items produced from the Stream
+     * @param limit Only check this number of items from the Stream
+     * @see #allMatch
+     * @see #startsWithAllLong
+     * @see #startsWithAllInt
+     * @see #startsWithAllDouble
+     */
     public static <T> Matcher<Stream<T>> startsWithAll(Matcher<T> matcher, long limit) {
         return new StreamAllMatches<T>(matcher) {
             @Override
@@ -103,6 +172,16 @@ public class StreamMatchers {
 
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive longs, the first limit of which must match the given Matcher
+     *
+     * @param matcher A matcher to apply to items produced from the Stream
+     * @param limit Only check this number of items from the Stream
+     * @see #allMatch
+     * @see #startsWithAll
+     * @see #startsWithAllInt
+     * @see #startsWithAllDouble
+     */
     public static Matcher<LongStream> startsWithAllLong(Matcher<Long> matcher, long limit) {
         return new LongStreamAllMatches(matcher) {
             @Override
@@ -117,6 +196,16 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive ints, the first limit of which must match the given Matcher
+     *
+     * @param matcher A matcher to apply to items produced from the Stream
+     * @param limit Only check this number of items from the Stream
+     * @see #allMatch
+     * @see #startsWithAll
+     * @see #startsWithAllLong
+     * @see #startsWithAllDouble
+     */
     public static Matcher<IntStream> startsWithAllInt(Matcher<Integer> matcher, long limit) {
         return new IntStreamAllMatches(matcher) {
             @Override
@@ -131,6 +220,16 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive doubles, the first limit of which must match the given Matcher
+     *
+     * @param matcher A matcher to apply to items produced from the Stream
+     * @param limit Only check this number of items from the Stream
+     * @see #allMatch
+     * @see #startsWithAll
+     * @see #startsWithAllInt
+     * @see #startsWithAllDouble
+     */
     public static Matcher<DoubleStream> startsWithAllDouble(Matcher<Double> matcher, long limit) {
         return new DoubleStreamAllMatches(matcher) {
             @Override
@@ -153,6 +252,17 @@ public class StreamMatchers {
                 .appendValue(matcher);
     }
 
+    /**
+     * A matcher for potentially infinite Streams of objects,
+     * at least one of the first limit of which must match the given Matcher
+     *
+     * @param matcher A matcher to apply to items produced from the Stream
+     * @param limit Only check this number of items from the Stream
+     * @see #anyMatch
+     * @see #startsWithAnyInt
+     * @see #startsWithAnyLong
+     * @see #startsWithAnyDouble
+     */
     public static <T> Matcher<Stream<T>> startsWithAny(Matcher<T> matcher, long limit) {
         return new StreamAnyMatches<T>(matcher) {
             @Override
@@ -167,6 +277,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive longs,
+     * at least one of the first limit of which must match the given Matcher
+     *
+     * @param matcher A matcher to apply to items produced from the Stream
+     * @param limit Only check this number of items from the Stream
+     * @see #anyMatch
+     * @see #startsWithAny
+     * @see #startsWithAnyLong
+     * @see #startsWithAnyDouble
+     */
     public static Matcher<LongStream> startsWithAnyLong(Matcher<Long> matcher, long limit) {
         return new LongStreamAnyMatches(matcher) {
             @Override
@@ -181,6 +302,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive doubles,
+     * at least one of the first limit of which must match the given Matcher
+     *
+     * @param matcher A matcher to apply to items produced from the Stream
+     * @param limit Only check this number of items from the Stream
+     * @see #anyMatch
+     * @see #startsWithAny
+     * @see #startsWithAnyInt
+     * @see #startsWithAnyLong
+     */
     public static Matcher<DoubleStream> startsWithAnyDouble(Matcher<Double> matcher, long limit) {
         return new DoubleStreamAnyMatches(matcher) {
             @Override
@@ -195,6 +327,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for potentially infinite Streams of primitive ints,
+     * at least one of the first limit of which must match the given Matcher
+     *
+     * @param matcher A matcher to apply to items produced from the Stream
+     * @param limit Only check this number of items from the Stream
+     * @see #anyMatch
+     * @see #startsWithAny
+     * @see #startsWithAnyLong
+     * @see #startsWithAnyDouble
+     */
     public static Matcher<IntStream> startsWithAnyInt(Matcher<Integer> matcher, long limit) {
         return new IntStreamAnyMatches(matcher) {
             @Override
@@ -209,6 +352,15 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * The BaseStream must produce exactly the given expected items in order, and no more.
+     *
+     * For infinite BaseStreams see {@link #startsWith(T...)}
+     * @param expected The items that should be produced by the BaseStream
+     * @param <T> The type of items
+     * @param <S> The type of the BaseStream
+     * @see #startsWith(T...)
+     */
     @SafeVarargs
     public static <T,S extends BaseStream<T,S>> Matcher<BaseStream<T,S>> contains(T... expected) {
         return new BaseStreamMatcher<T,BaseStream<T,S>>() {
@@ -219,6 +371,18 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream of objects, all of which must match the given Matcher.
+     *
+     * For infinite Streams see {@link #startsWithAll}
+     *
+     * @param matcher A Matcher against which to compare items from the Stream
+     * @param <T> The type of items produced by the Stream
+     * @see #startsWithAll
+     * @see #allMatchInt
+     * @see #allMatchLong
+     * @see #allMatchDouble
+     */
     public static <T> Matcher<Stream<T>> allMatch(Matcher<T> matcher) {
         return new StreamAllMatches<T>(matcher) {
             @Override
@@ -228,6 +392,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream of primitive ints, all of which must match the given Matcher.
+     *
+     * For infinite Streams see {@link #startsWithAllInt}
+     *
+     * @param matcher A Matcher against which to compare items from the Stream
+     * @see #startsWithAll
+     * @see #allMatch
+     * @see #allMatchLong
+     * @see #allMatchDouble
+     */
     public static Matcher<IntStream> allMatchInt(Matcher<Integer> matcher) {
         return new IntStreamAllMatches(matcher) {
             @Override
@@ -237,6 +412,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream of primitive longs, all of which must match the given Matcher.
+     *
+     * For infinite Streams see {@link #startsWithAllLong}
+     *
+     * @param matcher A Matcher against which to compare items from the Stream
+     * @see #startsWithAll
+     * @see #allMatch
+     * @see #allMatchInt
+     * @see #allMatchDouble
+     */
     public static Matcher<LongStream> allMatchLong(Matcher<Long> matcher) {
         return new LongStreamAllMatches(matcher) {
             @Override
@@ -246,6 +432,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream of primitive doubles, all of which must match the given Matcher.
+     *
+     * For infinite Streams see {@link #startsWithAllDouble}
+     *
+     * @param matcher A Matcher against which to compare items from the Stream
+     * @see #startsWithAll
+     * @see #allMatch
+     * @see #allMatchInt
+     * @see #allMatchLong
+     */
     public static Matcher<DoubleStream> allMatchDouble(Matcher<Double> matcher) {
         return new DoubleStreamAllMatches(matcher) {
             @Override
@@ -255,6 +452,18 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream of objects, at least one of which must match the given Matcher.
+     *
+     * For infinite Streams see {@link #startsWithAny}
+     *
+     * @param matcher A Matcher against which to compare items from the Stream
+     * @param <T> The type of items produced by the Stream
+     * @see #startsWithAny
+     * @see #anyMatchInt
+     * @see #anyMatchLong
+     * @see #anyMatchDouble
+     */
     public static <T> Matcher<Stream<T>> anyMatch(Matcher<T> matcher) {
         return new StreamAnyMatches<T>(matcher) {
             @Override
@@ -264,6 +473,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream of primitive longs, at least one of which must match the given Matcher.
+     *
+     * For infinite Streams see {@link #startsWithAnyLong}
+     *
+     * @param matcher A Matcher against which to compare items from the Stream
+     * @see #startsWithAny
+     * @see #anyMatch
+     * @see #anyMatchInt
+     * @see #anyMatchDouble
+     */
     public static Matcher<LongStream> anyMatchLong(Matcher<Long> matcher) {
         return new LongStreamAnyMatches(matcher) {
             @Override
@@ -273,6 +493,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream of primitive doubles, at least one of which must match the given Matcher.
+     *
+     * For infinite Streams see {@link #startsWithAnyDouble}
+     *
+     * @param matcher A Matcher against which to compare items from the Stream
+     * @see #startsWithAny
+     * @see #anyMatch
+     * @see #anyMatchInt
+     * @see #anyMatchDouble
+     */
     public static Matcher<DoubleStream> anyMatchDouble(Matcher<Double> matcher) {
         return new DoubleStreamAnyMatches(matcher) {
             @Override
@@ -282,6 +513,18 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a finite Stream of primitive ints, at least one of which must match the given Matcher.
+     *
+     * For infinite Streams see {@link #startsWithAnyInt}
+     *
+     * @param matcher A Matcher against which to compare items from the Stream
+     * @see #startsWithAny
+     * @see #anyMatch
+     * @see #anyMatchLong
+     * @see #anyMatchDouble
+     */
+
     public static Matcher<IntStream> anyMatchInt(Matcher<Integer> matcher) {
         return new IntStreamAnyMatches(matcher) {
             @Override
@@ -290,6 +533,19 @@ public class StreamMatchers {
             }
         };
     }
+
+    /**
+     * A matcher for a potentially infinite Stream of objects against n expected items, matching if the first n items
+     * produced by the Stream equal the expected items in order. Whether the Stream would subsequently produce
+     * additional items is irrelevant.
+     *
+     * @param expected The expected items produced first by the Stream
+     * @param <T> The type of items
+     * @see #contains
+     * @see #startsWithInt
+     * @see #startsWithDouble
+     * @see #startsWithLong
+     */
 
     @SafeVarargs
     public static <T> Matcher<Stream<T>> startsWith(T... expected) {
