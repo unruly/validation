@@ -4,11 +4,11 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PrimitiveIterator;
 import java.util.stream.*;
-
-import static org.junit.Assert.assertThat;
 
 public class StreamMatchers {
 
@@ -166,7 +166,7 @@ public class StreamMatchers {
 
     public static <T> Matcher<Stream<T>> startsWithAny(Matcher<T> matcher, long limit) {
         return new TypeSafeMatcher<Stream<T>>() {
-            List<T> accumulator = new LinkedList<>();
+            final List<T> accumulator = new LinkedList<>();
 
             @Override
             protected boolean matchesSafely(Stream<T> actual) {
@@ -187,7 +187,7 @@ public class StreamMatchers {
 
     public static Matcher<LongStream> startsWithAnyLong(Matcher<Long> matcher, long limit) {
         return new TypeSafeMatcher<LongStream>() {
-            List<Long> accumulator = new LinkedList<>();
+            final List<Long> accumulator = new LinkedList<>();
 
             @Override
             protected boolean matchesSafely(LongStream actual) {
@@ -208,7 +208,7 @@ public class StreamMatchers {
 
     public static Matcher<DoubleStream> startsWithAnyDouble(Matcher<Double> matcher, long limit) {
         return new TypeSafeMatcher<DoubleStream>() {
-            List<Double> accumulator = new LinkedList<>();
+            final List<Double> accumulator = new LinkedList<>();
 
             @Override
             protected boolean matchesSafely(DoubleStream actual) {
@@ -229,7 +229,7 @@ public class StreamMatchers {
 
     public static Matcher<IntStream> startsWithAnyInt(Matcher<Integer> matcher, long limit) {
         return new TypeSafeMatcher<IntStream>() {
-            List<Integer> accumulator = new LinkedList<>();
+            final List<Integer> accumulator = new LinkedList<>();
 
             @Override
             protected boolean matchesSafely(IntStream actual) {
@@ -345,7 +345,7 @@ public class StreamMatchers {
 
     public static <T> Matcher<Stream<T>> anyMatch(Matcher<T> matcher) {
         return new TypeSafeMatcher<Stream<T>>() {
-            List<T> accumulator = new LinkedList<>();
+            final List<T> accumulator = new LinkedList<>();
 
             @Override
             protected boolean matchesSafely(Stream<T> actual) {
@@ -366,7 +366,7 @@ public class StreamMatchers {
 
     public static Matcher<LongStream> anyMatchLong(Matcher<Long> matcher) {
         return new TypeSafeMatcher<LongStream>() {
-            List<Long> accumulator = new LinkedList<>();
+            final List<Long> accumulator = new LinkedList<>();
 
             @Override
             protected boolean matchesSafely(LongStream actual) {
@@ -387,7 +387,7 @@ public class StreamMatchers {
 
     public static Matcher<DoubleStream> anyMatchDouble(Matcher<Double> matcher) {
         return new TypeSafeMatcher<DoubleStream>() {
-            List<Double> accumulator = new LinkedList<>();
+            final List<Double> accumulator = new LinkedList<>();
 
             @Override
             protected boolean matchesSafely(DoubleStream actual) {
@@ -408,7 +408,7 @@ public class StreamMatchers {
 
     public static Matcher<IntStream> anyMatchInt(Matcher<Integer> matcher) {
         return new TypeSafeMatcher<IntStream>() {
-            List<Integer> accumulator = new LinkedList<>();
+            final List<Integer> accumulator = new LinkedList<>();
 
             @Override
             protected boolean matchesSafely(IntStream actual) {
@@ -465,8 +465,8 @@ public class StreamMatchers {
     }
 
     private static abstract class BaseStreamMatcher<T,S extends BaseStream<T,?>> extends TypeSafeMatcher<S> {
-        protected final List<T> expectedAccumulator = new LinkedList<>();
-        protected final List<T> actualAccumulator = new LinkedList<>();
+        final List<T> expectedAccumulator = new LinkedList<>();
+        final List<T> actualAccumulator = new LinkedList<>();
 
         @Override
         public void describeTo(Description description) {
@@ -482,7 +482,7 @@ public class StreamMatchers {
             description.appendText("Stream of ").appendValueList("[", ",", "]", values);
         }
 
-        protected boolean remainingItemsEqual(Iterator<T> expectedIterator, Iterator<T> actualIterator) {
+        boolean remainingItemsEqual(Iterator<T> expectedIterator, Iterator<T> actualIterator) {
             if (!expectedIterator.hasNext() && !actualIterator.hasNext()) {
                 return true;
             }

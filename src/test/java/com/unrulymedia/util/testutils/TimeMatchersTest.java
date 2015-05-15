@@ -18,7 +18,7 @@ public class TimeMatchersTest {
     private Instant instant2015 = Instant.parse("2015-01-01T00:00:00.00Z");
     private Instant instant2014 = Instant.parse("2014-01-01T00:00:00.00Z");
     private LocalDate localDate2015 = LocalDate.parse("2015-01-01");
-    private LocalDate localDate2014 = LocalDate.parse("2014-01-01");;
+    private LocalDate localDate2014 = LocalDate.parse("2014-01-01");
 
     @Test
     public void after_successInstant() throws Exception {

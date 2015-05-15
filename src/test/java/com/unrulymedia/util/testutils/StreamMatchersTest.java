@@ -9,13 +9,12 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.unrulymedia.util.testutils.StreamMatchers.*;
+import static com.unrulymedia.util.testutils.StreamMatchers.contains;
+import static com.unrulymedia.util.testutils.StreamMatchers.empty;
 import static com.unrulymedia.util.testutils.StreamMatchers.equalTo;
 import static com.unrulymedia.util.testutils.StreamMatchers.startsWith;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 public class StreamMatchersTest {
     @Test

@@ -1,6 +1,5 @@
 package com.unrulymedia.util;
 
-import com.unrulymedia.util.testutils.OptionalMatchers;
 import com.unrulymedia.util.testutils.StreamMatchers;
 import com.unrulymedia.util.testutils.ValidationMatchers;
 import org.junit.Test;
@@ -10,7 +9,6 @@ import java.util.Optional;
 
 import static com.unrulymedia.util.testutils.OptionalMatchers.contains;
 import static com.unrulymedia.util.testutils.OptionalMatchers.empty;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ValidationToAndFromMonadsTest {

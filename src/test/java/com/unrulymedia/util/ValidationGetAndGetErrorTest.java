@@ -2,7 +2,6 @@ package com.unrulymedia.util;
 
 import com.unrulymedia.util.testutils.ValidationMatchers;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
