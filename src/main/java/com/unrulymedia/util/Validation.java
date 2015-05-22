@@ -5,8 +5,7 @@ import com.unrulymedia.util.function.ExceptionalPredicate;
 import com.unrulymedia.util.function.ExceptionalSupplier;
 
 import java.util.*;
-import java.util.function.BinaryOperator;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,48 +89,74 @@ public final class Validation<T,S> {
         }
     }
 
-    public <U> Validation<U, ?> map(ExceptionalFunction<? super T, ? extends U, ? extends Exception> mapper) {
-        Objects.requireNonNull(mapper);
-        if(isFailure()) {
-            return new Validation<>(null, errors);
-        } else {
-            try {
-                U mapped = mapper.apply(value.get());
-                if(mapped == null) {
-                    return failure(new NullPointerException());
+    public <U> Validation<U, ?> tryMap(ExceptionalFunction<? super T, ? extends U, ? extends Exception> mapper) {
+        try {
+            return map((a) -> {
+                try {
+                    return mapper.apply(a);
+                } catch (Exception e) {
+                    throw new MapException(e);
                 }
-                return new Validation<>(mapped,null);
-            } catch (Exception e) {
-                return failure(e);
-            }
+            });
+        } catch (MapException e) {
+            return failure(e.getCause());
         }
     }
 
-    public <U> Validation<U, ?> flatMap(ExceptionalFunction<? super T, ? extends Validation<U, ?>, ? extends Exception> mapper) {
+    public <U> Validation<U, S> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper);
         if(isFailure()) {
             return new Validation<>(null, errors);
         } else {
-            try {
-                Validation<U, ?> mapped = mapper.apply(value.get());
-                return mapped == null ? failure(new NullPointerException()) : mapped;
-            } catch (Exception e) {
-                return failure(e);
-            }
+            U mapped = mapper.apply(value.get());
+            return new Validation<>(mapped,null);
         }
     }
 
-    public Validation<T, ?> filter(ExceptionalPredicate<? super T, ? extends Exception> predicate) {
+    public <U> Validation<U, ?> tryFlatMap(ExceptionalFunction<? super T, ? extends Validation<U, S>, ? extends Exception> mapper) {
+        try {
+            return flatMap((a) -> {
+                try {
+                    return mapper.apply(a);
+                } catch (Exception e) {
+                    throw new MapException(e);
+                }
+            });
+        } catch (MapException e) {
+            return failure(e.getCause());
+        }
+    }
+
+    public <U> Validation<U, S> flatMap(Function<? super T, ? extends Validation<U, S>> mapper) {
+        Objects.requireNonNull(mapper);
+        if(isFailure()) {
+            return new Validation<>(null, errors);
+        } else {
+            return  mapper.apply(value.get());
+        }
+    }
+
+    public Validation<T, ?> tryFilter(ExceptionalPredicate<? super T, ? extends Exception> predicate) {
+        try {
+            return filter((a) -> {
+                try {
+                    return predicate.test(a);
+                } catch (Exception e) {
+                    throw new MapException(e);
+                }
+            });
+        } catch (MapException e) {
+            return failure(e.getCause());
+        }
+    }
+
+    public Validation<T, S> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate);
         if (isFailure()) {
             return this;
         } else {
-            try {
-                T actualValue = value.get();
-                return predicate.test(actualValue) ? this : failure(actualValue);
-            } catch (Exception e) {
-                return failure(e);
-            }
+            T actualValue = value.get();
+            return predicate.test(actualValue) ? this : failure(asList());
         }
     }
 
@@ -227,6 +252,12 @@ public final class Validation<T,S> {
                         (v1, v2) -> v1.compose(v2, (a, b) -> Stream.of(a, b).map(Map::entrySet).flatMap(Collection::stream).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (c, d) -> d)))
                 );
     }
+
+    private static class MapException extends RuntimeException{
+        public MapException(Exception e ) {
+            super(e);
+        }
+    };
 
     @Override
     public String toString() {

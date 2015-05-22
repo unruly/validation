@@ -11,7 +11,7 @@ public class ValidationMapAndFlatMapTest {
 
     @Test
     public void shouldMapOverASuccess() throws Exception {
-        Validation<Integer, ?> validation = Validation.success(3);
+        Validation<Integer, String> validation = Validation.success(3);
         assertThat(validation.map( a -> a + " cows"), ValidationMatchers.hasValue("3 cows"));
     }
 
@@ -24,55 +24,38 @@ public class ValidationMapAndFlatMapTest {
 
     @Test
     public void shouldBeFailureIfMapMapperThrows() throws Exception {
-        Validation<Integer,?> validation = Validation.success(3);
+        Validation<Integer,String> validation = Validation.success(3);
 
-        Validation<String,?> mapped = validation.map(a -> {
+        Validation<String,?> mapped = validation.tryMap(a -> {
             throw new Exception("oh dear");
         });
         assertThat(mapped, ValidationMatchers.isFailureNotSuccess());
         assertThat(mapped, ValidationMatchers.hasErrorValueWhichIsAnException(new Exception("oh dear")));
     }
 
-    @Test
-    public void shouldBeFailureIfMapMapperReturnsNull()  {
-        Validation<Integer, ?> validation = Validation.success(3);
-
-        Validation<String, ?> mapped = validation.map(a -> null);
-        assertThat(mapped, ValidationMatchers.isFailureNotSuccess());
-        assertThat(mapped, ValidationMatchers.hasErrorValueWhichIsAnException(new NullPointerException()));
-    }
-
     // FlatMap
 
     @Test
     public void shouldFlatMapOverASuccess() throws Exception {
-        Validation<Integer, ?> validation = Validation.success(3);
+        Validation<Integer, String> validation = Validation.success(3);
         assertThat(validation.flatMap(a -> Validation.success(a + " toots on the horn")), ValidationMatchers.hasValue("3 toots on the horn"));
     }
 
     @Test
     public void shouldFlatMapOverAFailure() throws Exception {
-        Validation<?, String> validation = Validation.failure("whoops");
-        assertThat(validation.flatMap(a -> Validation.success(a + " toots on the horn")), ValidationMatchers.isFailureNotSuccess());
-        assertThat(validation, ValidationMatchers.hasErrorValue("whoops"));
+        Validation<String, String> validation = Validation.failure("whoops");
+        Validation<String, String> flatMapped = validation.flatMap(a -> Validation.success(a + " toots on the horn"));
+        assertThat(flatMapped, ValidationMatchers.isFailureNotSuccess());
+        assertThat(flatMapped, ValidationMatchers.hasErrorValue("whoops"));
     }
 
     @Test
     public void shouldBeFailureIfFlatMapMapperThrows() throws Exception {
         Validation<Integer, ?> validation = Validation.success(3);
-        Validation<String, ? > mapped = validation.flatMap((a) -> {
+        Validation<String, ? > mapped = validation.tryFlatMap((a) -> {
             throw new Exception("foo");
         });
         assertThat(mapped, ValidationMatchers.isFailureNotSuccess());
         assertThat(mapped, ValidationMatchers.hasErrorValueWhichIsAnException(new Exception("foo")));
     }
-
-    @Test
-    public void shouldBeFailureIfFlatMapMapperReturnsNull() throws Exception {
-        Validation<Integer, ?> validation = Validation.success(3);
-        Validation<String, ?> mapped = validation.flatMap((a) -> null);
-        assertThat(mapped, ValidationMatchers.isFailureNotSuccess());
-        assertThat(mapped, ValidationMatchers.hasErrorValueWhichIsAnException(new NullPointerException()));
-    }
-
 }
