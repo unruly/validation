@@ -1,9 +1,11 @@
-package com.unrulymedia.util.testutils;
+package matchers;
 
 import com.unrulymedia.util.Validation;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+
+import java.util.Arrays;
 
 public class ValidationMatchers {
     public static <T, U> Matcher<? super Validation<? extends T,? extends U>> isFailureNotSuccess() {
@@ -15,7 +17,7 @@ public class ValidationMatchers {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("a failure com.unrulymedia.util.Validator");
+                description.appendText("a failure");
             }
         };
     }
@@ -29,7 +31,7 @@ public class ValidationMatchers {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("a success com.unrulymedia.util.Validator");
+                description.appendText("a success");
             }
         };
     }
@@ -38,34 +40,89 @@ public class ValidationMatchers {
         return new TypeSafeMatcher<Validation<? extends T,? extends U>>() {
             @Override
             protected boolean matchesSafely(Validation<? extends T,? extends U> item) {
-                return item.get().equals(expected);
+                return item.isSuccess() && item.get().equals(expected);
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("a success com.unrulymedia.util.Validator containing a value of " + expected);
+                description.appendValue(Validation.success(expected));
             }
         };
     }
 
-    public static <T, U> Matcher<? super Validation<? extends T,?>> hasErrorValue(U expected) {
+    public static <T, U> Matcher<? super Validation<? extends T,? extends U>> hasValue(Matcher<T> matcher) {
+        return new TypeSafeMatcher<Validation<? extends T,? extends U>>() {
+            @Override
+            protected boolean matchesSafely(Validation<? extends T,? extends U> item) {
+                return item.map(matcher::matches).orElse(false);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description
+                        .appendText("a success with value matching ")
+                        .appendValue(matcher);
+            }
+        };
+    }
+
+    @SafeVarargs
+    public static <T, U> Matcher<? super Validation<? extends T,?>> hasErrorValue(U... expected) {
         return new TypeSafeMatcher<Validation<? extends T,?>>() {
             @Override
             protected boolean matchesSafely(Validation<? extends T,?> item) {
-                return item.getErrors().contains(expected);
+                return !item.isSuccess() && Arrays.asList(expected).equals(item.getErrors());
+
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("a failure com.unrulymedia.util.Validator containing an error value of " + expected);
+                description
+                        .appendText("a failure with errors containing ")
+                        .appendValue(expected);
             }
         };
     }
+
+    @SafeVarargs
+    public static <T, U> Matcher<? super Validation<? extends T,?>> hasErrorValue(Matcher<U>... expected) {
+        return new TypeSafeMatcher<Validation<? extends T,?>>() {
+            @Override
+            protected boolean matchesSafely(Validation<? extends T,?> item) {
+                if (item.isSuccess()) {
+                    return false;
+                }
+
+                if (expected.length != item.getErrors().size()) {
+                    return false;
+                }
+
+                for(int i = 0; i < expected.length; i++) {
+                    if(!expected[i].matches(item.getErrors().get(i))) {
+                        return false;
+                    }
+                }
+                return true;
+
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description
+                        .appendText("a failure with errors matching in turn ")
+                        .appendValue(expected);
+            }
+        };
+    }
+
 
     public static <E extends Exception> Matcher<? super Validation<?, ?>> hasErrorValueWhichIsAnException(E e) {
         return new TypeSafeMatcher<Validation<?,?>>() {
             @Override
             protected boolean matchesSafely(Validation<?, ?> item) {
+                if(item.isSuccess()) {
+                    return false;
+                }
                 Exception error = (Exception)item.getErrors().get(0);
                 if(!error.getClass().equals(e.getClass())) {
                     return false;
@@ -77,7 +134,9 @@ public class ValidationMatchers {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("a failure with exception " + e);
+                description
+                        .appendText("a failure with errors containing ")
+                        .appendValue(e);
             }
         };
     }

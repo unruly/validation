@@ -1,4 +1,4 @@
-package com.unrulymedia.util.testutils;
+package matchers;
 
 import org.hamcrest.Matcher;
 
@@ -11,12 +11,12 @@ public class Helper {
     static <S> void testFailingMatcher(S testData, Matcher<S> matcher, String expectedDescription, String actualDescription) {
         try {
             assertThat(testData,matcher);
-            throw new Exception();
+            throw new IllegalStateException();
         } catch (AssertionError e) {
             System.out.println(e.getMessage());
             assertThat(e.toString(), stringContainsInOrder(asList(expectedDescription, actualDescription)));
-        } catch (Exception ignored) {
-            fail();
+        } catch (IllegalStateException ignored) {
+            fail("Matcher incorrectly matched");
         }
     }
 }

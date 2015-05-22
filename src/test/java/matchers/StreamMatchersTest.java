@@ -1,4 +1,4 @@
-package com.unrulymedia.util.testutils;
+package matchers;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -6,11 +6,11 @@ import org.junit.Test;
 
 import java.util.stream.*;
 
-import static com.unrulymedia.util.testutils.StreamMatchers.*;
-import static com.unrulymedia.util.testutils.StreamMatchers.contains;
-import static com.unrulymedia.util.testutils.StreamMatchers.empty;
-import static com.unrulymedia.util.testutils.StreamMatchers.equalTo;
-import static com.unrulymedia.util.testutils.StreamMatchers.startsWith;
+import static matchers.StreamMatchers.*;
+import static matchers.StreamMatchers.contains;
+import static matchers.StreamMatchers.empty;
+import static matchers.StreamMatchers.equalTo;
+import static matchers.StreamMatchers.startsWith;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 

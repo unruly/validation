@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.unrulymedia.util.testutils.ValidationMatchers.*;
+import static matchers.ValidationMatchers.*;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;

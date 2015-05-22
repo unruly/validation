@@ -1,4 +1,4 @@
-package com.unrulymedia.util.testutils;
+package matchers;
 
 import org.junit.Test;
 

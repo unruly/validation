@@ -1,4 +1,4 @@
-package com.unrulymedia.util.testutils;
+package matchers;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -13,7 +13,7 @@ public class OptionalMatchersTest {
 
     @Test
     public void empty_success() throws Exception {
-        assertThat(Optional.empty(),OptionalMatchers.empty());
+        assertThat(Optional.empty(), OptionalMatchers.empty());
     }
 
     @Test

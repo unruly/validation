@@ -16,9 +16,6 @@ public final class Validation<T,S> {
     private final Optional<T> value;
     private final List<S> errors;
 
-    private Validation() {
-        throw new RuntimeException("don't do that");
-    }
 
     private Validation(T value, List<S> errors) {
         this.value = Optional.ofNullable(value);
@@ -233,10 +230,9 @@ public final class Validation<T,S> {
 
     @Override
     public String toString() {
-        return "com.unrulymedia.util.Validator{" +
-                "value=" + value +
-                ", errors=" + errors +
-                '}';
+        return isSuccess()
+                ? String.format("Validation.success[%s]",value.get())
+                : String.format("Validation.failure[%s]",errors);
     }
 
     @Override

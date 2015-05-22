@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Validator<T,U> {
-    private Validator() {throw new RuntimeException();}
-
     private Validator(List<ValidatorPair<T, U>> validatorPairs) {
         this.validatorPairs = validatorPairs;
     }

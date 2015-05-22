@@ -1,6 +1,6 @@
 package com.unrulymedia.util;
 
-import com.unrulymedia.util.testutils.ValidationMatchers;
+import matchers.ValidationMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 

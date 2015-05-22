@@ -1,4 +1,4 @@
-package com.unrulymedia.util.testutils;
+package matchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
