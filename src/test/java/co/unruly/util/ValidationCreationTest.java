@@ -1,6 +1,6 @@
-package com.unrulymedia.util;
+package co.unruly.util;
 
-import matchers.ValidationMatchers;
+import co.unruly.matchers.ValidationMatchers;
 import org.junit.Test;
 
 import java.io.IOException;

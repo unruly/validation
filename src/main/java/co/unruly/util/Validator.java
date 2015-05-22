@@ -1,4 +1,4 @@
-package com.unrulymedia.util;
+package co.unruly.util;
 
 import java.util.Arrays;
 import java.util.List;

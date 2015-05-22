@@ -1,8 +1,8 @@
-package com.unrulymedia.util;
+package co.unruly.util;
 
-import com.unrulymedia.util.function.ExceptionalFunction;
-import com.unrulymedia.util.function.ExceptionalPredicate;
-import com.unrulymedia.util.function.ExceptionalSupplier;
+import co.unruly.util.function.ExceptionalFunction;
+import co.unruly.util.function.ExceptionalPredicate;
+import co.unruly.util.function.ExceptionalSupplier;
 
 import java.util.*;
 import java.util.function.*;

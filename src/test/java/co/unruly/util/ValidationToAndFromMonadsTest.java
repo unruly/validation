@@ -1,14 +1,14 @@
-package com.unrulymedia.util;
+package co.unruly.util;
 
-import matchers.StreamMatchers;
-import matchers.ValidationMatchers;
+import co.unruly.matchers.StreamMatchers;
+import co.unruly.matchers.ValidationMatchers;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static matchers.OptionalMatchers.contains;
-import static matchers.OptionalMatchers.empty;
+import static co.unruly.matchers.OptionalMatchers.contains;
+import static co.unruly.matchers.OptionalMatchers.empty;
 import static org.junit.Assert.assertThat;
 
 public class ValidationToAndFromMonadsTest {

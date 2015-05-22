@@ -1,6 +1,6 @@
-package matchers;
+package co.unruly.matchers;
 
-import com.unrulymedia.util.Validation;
+import co.unruly.util.Validation;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;

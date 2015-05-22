@@ -1,4 +1,4 @@
-package com.unrulymedia.util.function;
+package co.unruly.util.function;
 
 import java.util.Objects;
 

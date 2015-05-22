@@ -1,4 +1,4 @@
-package matchers;
+package co.unruly.matchers;
 
 import org.junit.Test;
 

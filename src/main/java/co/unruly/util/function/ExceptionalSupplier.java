@@ -1,4 +1,4 @@
-package com.unrulymedia.util.function;
+package co.unruly.util.function;
 
 @FunctionalInterface
 public interface ExceptionalSupplier<T, E extends Exception> {

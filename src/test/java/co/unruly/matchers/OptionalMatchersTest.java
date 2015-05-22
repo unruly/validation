@@ -1,4 +1,4 @@
-package matchers;
+package co.unruly.matchers;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
