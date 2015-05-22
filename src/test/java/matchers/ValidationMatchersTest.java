@@ -5,6 +5,8 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
@@ -134,17 +136,44 @@ public class ValidationMatchersTest {
     }
 
     @Test
+    public void hasErrorValueException_successMany() throws Exception {
+        assertThat(Validation.failure(asList(
+                    new IllegalStateException("not gonna work"),
+                    new IOException("the network is reliable!")
+                )),
+                ValidationMatchers.hasErrorValueWhichIsAnException(
+                        new IllegalStateException("not gonna work"),
+                        new IOException("the network is reliable!")
+                ));
+    }
+
+    @Test
     public void hasErrorValueException_failureDifferingMessage() throws Exception {
-        Helper.testFailingMatcher(Validation.failure(new IllegalStateException("not gonna work")), ValidationMatchers.hasErrorValueWhichIsAnException(new IllegalStateException("nah")), "a failure with errors containing <java.lang.IllegalStateException: nah>","failure[[java.lang.IllegalStateException: not gonna work]]");
+        Helper.testFailingMatcher(
+                Validation.failure(new IllegalStateException("not gonna work")),
+                ValidationMatchers.hasErrorValueWhichIsAnException(new IllegalStateException("nah")),
+                "a failure with errors containing [<java.lang.IllegalStateException: nah>]",
+                "failure[[java.lang.IllegalStateException: not gonna work]]"
+        );
     }
 
     @Test
     public void hasErrorValueException_failureDifferingType() throws Exception {
-        Helper.testFailingMatcher(Validation.failure(new IllegalStateException("nah")), ValidationMatchers.hasErrorValueWhichIsAnException(new UnsupportedOperationException("nah")), "a failure with errors containing <java.lang.UnsupportedOperationException: nah>","failure[[java.lang.IllegalStateException: nah]]");
+        Helper.testFailingMatcher(
+                Validation.failure(new IllegalStateException("nah")),
+                ValidationMatchers.hasErrorValueWhichIsAnException(new UnsupportedOperationException("nah")),
+                "a failure with errors containing [<java.lang.UnsupportedOperationException: nah>]",
+                "failure[[java.lang.IllegalStateException: nah]]"
+        );
     }
 
     @Test
     public void hasErrorValueException_failureIsValidationSuccess() throws Exception {
-        Helper.testFailingMatcher(Validation.<String,String>success("doh!"), ValidationMatchers.hasErrorValueWhichIsAnException(new IllegalStateException("foo")), "a failure with errors containing <java.lang.IllegalStateException: foo>","success[doh!]");
+        Helper.testFailingMatcher(
+                Validation.<String,String>success("doh!"),
+                ValidationMatchers.hasErrorValueWhichIsAnException(new IllegalStateException("foo")),
+                "a failure with errors containing [<java.lang.IllegalStateException: foo>]",
+                "success[doh!]"
+        );
     }
 }
