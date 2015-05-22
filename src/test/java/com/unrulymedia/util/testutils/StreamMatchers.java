@@ -177,7 +177,7 @@ public class StreamMatchers {
      *
      * @param matcher A matcher to apply to items produced from the Stream
      * @param limit Only check this number of items from the Stream
-     * @see #allMatch
+     * @see #allMatchLong
      * @see #startsWithAll
      * @see #startsWithAllInt
      * @see #startsWithAllDouble
@@ -201,7 +201,7 @@ public class StreamMatchers {
      *
      * @param matcher A matcher to apply to items produced from the Stream
      * @param limit Only check this number of items from the Stream
-     * @see #allMatch
+     * @see #allMatchInt
      * @see #startsWithAll
      * @see #startsWithAllLong
      * @see #startsWithAllDouble
@@ -225,10 +225,10 @@ public class StreamMatchers {
      *
      * @param matcher A matcher to apply to items produced from the Stream
      * @param limit Only check this number of items from the Stream
-     * @see #allMatch
+     * @see #allMatchDouble
      * @see #startsWithAll
      * @see #startsWithAllInt
-     * @see #startsWithAllDouble
+     * @see #startsWithAllLong
      */
     public static Matcher<DoubleStream> startsWithAllDouble(Matcher<Double> matcher, long limit) {
         return new DoubleStreamAllMatches(matcher) {
@@ -283,9 +283,9 @@ public class StreamMatchers {
      *
      * @param matcher A matcher to apply to items produced from the Stream
      * @param limit Only check this number of items from the Stream
-     * @see #anyMatch
+     * @see #anyMatchLong
      * @see #startsWithAny
-     * @see #startsWithAnyLong
+     * @see #startsWithAnyInt
      * @see #startsWithAnyDouble
      */
     public static Matcher<LongStream> startsWithAnyLong(Matcher<Long> matcher, long limit) {
@@ -308,7 +308,7 @@ public class StreamMatchers {
      *
      * @param matcher A matcher to apply to items produced from the Stream
      * @param limit Only check this number of items from the Stream
-     * @see #anyMatch
+     * @see #anyMatchDouble
      * @see #startsWithAny
      * @see #startsWithAnyInt
      * @see #startsWithAnyLong
@@ -333,7 +333,7 @@ public class StreamMatchers {
      *
      * @param matcher A matcher to apply to items produced from the Stream
      * @param limit Only check this number of items from the Stream
-     * @see #anyMatch
+     * @see #anyMatchInt
      * @see #startsWithAny
      * @see #startsWithAnyLong
      * @see #startsWithAnyDouble
@@ -355,11 +355,14 @@ public class StreamMatchers {
     /**
      * The BaseStream must produce exactly the given expected items in order, and no more.
      *
-     * For infinite BaseStreams see {@link #startsWith(T...)}
+     * For infinite BaseStreams see {@link #startsWith(T...)} or a primitive stream variant
      * @param expected The items that should be produced by the BaseStream
      * @param <T> The type of items
      * @param <S> The type of the BaseStream
      * @see #startsWith(T...)
+     * @see #startsWithInt(int...)
+     * @see #startsWithLong(long...)
+     * @see #startsWithDouble(double...)
      */
     @SafeVarargs
     public static <T,S extends BaseStream<T,S>> Matcher<BaseStream<T,S>> contains(T... expected) {
@@ -398,7 +401,7 @@ public class StreamMatchers {
      * For infinite Streams see {@link #startsWithAllInt}
      *
      * @param matcher A Matcher against which to compare items from the Stream
-     * @see #startsWithAll
+     * @see #startsWithAllInt
      * @see #allMatch
      * @see #allMatchLong
      * @see #allMatchDouble
@@ -418,7 +421,7 @@ public class StreamMatchers {
      * For infinite Streams see {@link #startsWithAllLong}
      *
      * @param matcher A Matcher against which to compare items from the Stream
-     * @see #startsWithAll
+     * @see #startsWithAllLong
      * @see #allMatch
      * @see #allMatchInt
      * @see #allMatchDouble
@@ -438,7 +441,7 @@ public class StreamMatchers {
      * For infinite Streams see {@link #startsWithAllDouble}
      *
      * @param matcher A Matcher against which to compare items from the Stream
-     * @see #startsWithAll
+     * @see #startsWithAllDouble
      * @see #allMatch
      * @see #allMatchInt
      * @see #allMatchLong
@@ -479,7 +482,7 @@ public class StreamMatchers {
      * For infinite Streams see {@link #startsWithAnyLong}
      *
      * @param matcher A Matcher against which to compare items from the Stream
-     * @see #startsWithAny
+     * @see #startsWithAnyLong
      * @see #anyMatch
      * @see #anyMatchInt
      * @see #anyMatchDouble
@@ -499,7 +502,7 @@ public class StreamMatchers {
      * For infinite Streams see {@link #startsWithAnyDouble}
      *
      * @param matcher A Matcher against which to compare items from the Stream
-     * @see #startsWithAny
+     * @see #startsWithAnyDouble
      * @see #anyMatch
      * @see #anyMatchInt
      * @see #anyMatchDouble
@@ -519,7 +522,7 @@ public class StreamMatchers {
      * For infinite Streams see {@link #startsWithAnyInt}
      *
      * @param matcher A Matcher against which to compare items from the Stream
-     * @see #startsWithAny
+     * @see #startsWithAnyInt
      * @see #anyMatch
      * @see #anyMatchLong
      * @see #anyMatchDouble
@@ -557,6 +560,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a potentially infinite Stream of primitive doubles against n expected items, matching if the first n items
+     * produced by the Stream equal the expected items in order. Whether the Stream would subsequently produce
+     * additional items is irrelevant.
+     *
+     * @param expected The expected items produced first by the Stream
+     * @see #contains
+     * @see #startsWith
+     * @see #startsWithInt
+     * @see #startsWithLong
+     */
     public static Matcher<DoubleStream> startsWithDouble(double... expected) {
         return new BaseStreamMatcher<Double,DoubleStream>() {
             @Override
@@ -566,6 +580,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a potentially infinite Stream of primitive longs against n expected items, matching if the first n items
+     * produced by the Stream equal the expected items in order. Whether the Stream would subsequently produce
+     * additional items is irrelevant.
+     *
+     * @param expected The expected items produced first by the Stream
+     * @see #contains
+     * @see #startsWith
+     * @see #startsWithInt
+     * @see #startsWithDouble
+     */
     public static Matcher<LongStream> startsWithLong(long... expected) {
         return new BaseStreamMatcher<Long,LongStream>() {
             @Override
@@ -575,6 +600,17 @@ public class StreamMatchers {
         };
     }
 
+    /**
+     * A matcher for a potentially infinite Stream of primitive ints against n expected items, matching if the first n items
+     * produced by the Stream equal the expected items in order. Whether the Stream would subsequently produce
+     * additional items is irrelevant.
+     *
+     * @param expected The expected items produced first by the Stream
+     * @see #contains
+     * @see #startsWith
+     * @see #startsWithLong
+     * @see #startsWithDouble
+     */
     public static Matcher<IntStream> startsWithInt(int... expected) {
         return new BaseStreamMatcher<Integer,IntStream>() {
             @Override

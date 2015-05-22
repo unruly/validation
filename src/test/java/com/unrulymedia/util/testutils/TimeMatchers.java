@@ -10,6 +10,12 @@ import java.time.temporal.TemporalAmount;
 
 public class TimeMatchers {
 
+    /**
+     * Matches a time strictly after that given
+     *
+     * @param time Time for comparison
+     * @param <T> The type of time, e.g. Instant or LocalDateTime
+     */
     public static <T extends Comparable<T> & Temporal> Matcher<T> after(T time) {
         return new TypeSafeMatcher<T>() {
             @Override
@@ -24,6 +30,12 @@ public class TimeMatchers {
         };
     }
 
+    /**
+     * Matches a time strictly before that given
+     *
+     * @param time Time for comparison
+     * @param <T> The type of time, e.g. Instant or LocalDateTime
+     */
     public static <T extends Comparable<T> & Temporal> Matcher<T> before(T time) {
         return new TypeSafeMatcher<T>() {
             @Override
@@ -38,6 +50,12 @@ public class TimeMatchers {
         };
     }
 
+    /**
+     * Matches a Comparable value greater than or equal to the first given value and less than or
+     * equal to the second given value
+     *
+     * @param <T> The type to compare, e.g. Temporal or TemporalAmount
+     */
     public static <T extends Comparable<T>> Matcher<T> between(T earlierOrEqual, T laterOrEqual) {
         return new TypeSafeMatcher<T>() {
             @Override
@@ -55,6 +73,11 @@ public class TimeMatchers {
         };
     }
 
+    /**
+     * Matches an amount of time strictly longer than that specified
+     * @param amount amount of time for comparison
+     * @param <T> The type to compare, typically Duration
+     */
     public static <T extends Comparable<T> & TemporalAmount> Matcher<T> longerThan(T amount) {
         return new TypeSafeMatcher<T>() {
 
@@ -70,6 +93,11 @@ public class TimeMatchers {
         };
     }
 
+    /**
+     * Matches an amount of time strictly shorter than that specified
+     * @param amount amount of time for comparison
+     * @param <T> The type to compare, typically Duration
+     */
     public static <T extends Comparable<T> & TemporalAmount> Matcher<T> shorterThan(T amount) {
         return new TypeSafeMatcher<T>() {
 
@@ -85,7 +113,10 @@ public class TimeMatchers {
         };
     }
 
-    public static Matcher<Period> periodMatches(Matcher<Integer> yearsMatcher, Matcher<Integer> monthsMatcher, Matcher<Integer> daysMatcher) {
+    /**
+     * Matches any Period for which the years, months and days match the provided matchers
+     */
+    public static Matcher<Period> matches(Matcher<Integer> yearsMatcher, Matcher<Integer> monthsMatcher, Matcher<Integer> daysMatcher) {
         return new TypeSafeMatcher<Period>() {
             @Override
             protected boolean matchesSafely(Period item) {

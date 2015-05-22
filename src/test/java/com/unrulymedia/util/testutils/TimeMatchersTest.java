@@ -90,17 +90,17 @@ public class TimeMatchersTest {
 
     @Test
     public void betweenTemporalAmount_successSame() throws Exception {
-        assertThat(Duration.ofSeconds(3), TimeMatchers.between(Duration.ofSeconds(3),Duration.ofSeconds(3)));
+        assertThat(Duration.ofSeconds(3), TimeMatchers.between(Duration.ofSeconds(3), Duration.ofSeconds(3)));
     }
 
     @Test
     public void periodMatcher_success() throws Exception {
-        assertThat(Period.of(1, 2, 3), TimeMatchers.periodMatches(equalTo(1), equalTo(2), equalTo(3)));
+        assertThat(Period.of(1, 2, 3), TimeMatchers.matches(equalTo(1), equalTo(2), equalTo(3)));
     }
 
     @Test
     public void periodMatcher_failureMessage() throws Exception {
-        Helper.testFailingMatcher(Period.of(4, 5, 6), TimeMatchers.periodMatches(equalTo(1), equalTo(2), equalTo(3)), "a Period with years matching <<1>> months matching <<1>> and days matching <<3>>", "P4Y5M6D");
+        Helper.testFailingMatcher(Period.of(4, 5, 6), TimeMatchers.matches(equalTo(1), equalTo(2), equalTo(3)), "a Period with years matching <<1>> months matching <<1>> and days matching <<3>>", "P4Y5M6D");
     }
 
 /*    @Test
