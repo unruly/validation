@@ -38,6 +38,23 @@ public class TimeMatchers {
         };
     }
 
+    public static <T extends Comparable<T>> Matcher<T> between(T earlierOrEqual, T laterOrEqual) {
+        return new TypeSafeMatcher<T>() {
+            @Override
+            protected boolean matchesSafely(T actual) {
+                return actual.compareTo(earlierOrEqual) >= 0 && actual.compareTo(laterOrEqual) <= 0;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("between ").appendValue(earlierOrEqual)
+                .appendText(" and ")
+                .appendValue(laterOrEqual)
+                .appendText(" inclusive");
+            }
+        };
+    }
+
     public static <T extends Comparable<T> & TemporalAmount> Matcher<T> longerThan(T amount) {
         return new TypeSafeMatcher<T>() {
 
