@@ -2,6 +2,16 @@
 
 A class for functional error handling in Java 8, either a success with a value or a failure with error(s)
 
+# Installation
+
+Available from the Central Repository. In Maven style:
+
+        <dependency>
+            <groupId>co.unruly</groupId>
+            <artifactId>validation</artifactId>
+            <version>1.0</version>
+        </dependency>
+
 ## Create a validation
 
     Validation<String,String> success = Validation.success("woot");
