@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Validation by unruly</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Validation</h1>
+      <h2 class="project-tagline">A class for functional error handling in Java 8</h2>
+      <a href="https://github.com/unruly/validation" class="btn">View on GitHub</a>
+      <a href="https://github.com/unruly/validation/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/unruly/validation/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
+
+<p>Available from the Central Repository. In Maven style:</p>
+
+<pre><code>    &lt;dependency&gt;
+        &lt;groupId&gt;co.unruly&lt;/groupId&gt;
+        &lt;artifactId&gt;validation&lt;/artifactId&gt;
+        &lt;version&gt;1.0&lt;/version&gt;
+    &lt;/dependency&gt;
+</code></pre>
+
+<h2>
+<a id="create-a-validation" class="anchor" href="#create-a-validation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a validation</h2>
+
+<pre><code>Validation&lt;String,String&gt; success = Validation.success("woot");
+Validation&lt;String,String&gt; failure = Validation.failure("awww");
+</code></pre>
+
+<p>The first type parameter T is the type of a successful value, the latter S the type of error(s)</p>
+
+<h2>
+<a id="is-this-a-success-or-a-failure" class="anchor" href="#is-this-a-success-or-a-failure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is this a success or a failure?</h2>
+
+<pre><code>boolean success = validation.isSuccess()
+boolean failure = validation.isFailure()
+</code></pre>
+
+<h2>
+<a id="get-the-value" class="anchor" href="#get-the-value" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get the value</h2>
+
+<pre><code>T value = validation.get()
+</code></pre>
+
+<h2>
+<a id="get-the-errors" class="anchor" href="#get-the-errors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get the errors</h2>
+
+<pre><code>List&lt;S&gt; errors = validation.getErrors()
+</code></pre>
+
+<h2>
+<a id="map-or-flatmap" class="anchor" href="#map-or-flatmap" aria-hidden="true"><span class="octicon octicon-link"></span></a>Map or flatMap</h2>
+
+<pre><code>Validation.success(2).map(i -&gt; i + 1);
+Validation.success(2).flatMap(i -&gt; Validation.success(i + 1));
+</code></pre>
+
+<p>Map and flatMap operate on the value of a successful Validation. They do not affect a failure Validation.</p>
+
+<h2>
+<a id="filter" class="anchor" href="#filter" aria-hidden="true"><span class="octicon octicon-link"></span></a>Filter</h2>
+
+<pre><code>Validation.success(2).filter(i -&gt; i &gt; 1);
+</code></pre>
+
+<p>Filtering a success can turn it into a failure with empty errors. It does not affect a failure.</p>
+
+<h2>
+<a id="catch-exceptions" class="anchor" href="#catch-exceptions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Catch exceptions</h2>
+
+<pre><code>Validation.tryTo(() -&gt; /* do something that may throw */)
+</code></pre>
+
+<p>If an exception is thrown tryTo will return a failure validation with the exception in the errors.</p>
+
+<h2>
+<a id="map-flatmap-or-filter-with-potentially-exception-throwing-functions" class="anchor" href="#map-flatmap-or-filter-with-potentially-exception-throwing-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Map, flatMap or filter with potentially exception throwing functions</h2>
+
+<pre><code>validation.tryMap(...)
+validation.tryFlatMap(...)
+validation.tryFilter(...)
+</code></pre>
+
+<p>If there is an exception the Validation is a failure with the exception in the errors.</p>
+
+<p>There are a couple of caveats here:</p>
+
+<ul>
+<li>The type of the errors of the returned Validation is Object</li>
+<li>If function f throws and function g catches then map(f).map(g) may not equal map(g compose f)</li>
+</ul>
+
+<h2>
+<a id="composition" class="anchor" href="#composition" aria-hidden="true"><span class="octicon octicon-link"></span></a>Composition</h2>
+
+<pre><code>Validation.success(3).compose(Validation.success(4), (a, b) -&gt; a * b);
+</code></pre>
+
+<p>Two composed successes produce a success with the values combined using the provided function. Otherwise a failure is
+produced, including errors from each.</p>
+
+<p>There are also some static methods for composing many Validations of type T for a few common types T
+(Integer, Long, Float, Double, Boolean, Collection, Map) with a sensible default composition function:</p>
+
+<pre><code>Validation.compose(() -&gt; Validation.success(3L), () -&gt; Validation.success(4L));
+</code></pre>
+
+<p>The use of lambda suppliers here is <a href="http://benjiweber.co.uk/blog/2015/02/20/work-around-java-same-erasure-errors-with-lambdas/" title="Work around Java “same erasure” errors with Lambdas">a pattern</a> for working around Java's type erasure.</p>
+
+<h2>
+<a id="inspiration" class="anchor" href="#inspiration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inspiration</h2>
+
+<p>From Scala:</p>
+
+<ul>
+<li>scala.util.Either</li>
+<li>scala.util.Try</li>
+</ul>
+
+<p>From Scalaz:</p>
+
+<ul>
+<li>scalaz.\/</li>
+<li>scalaz.Validation</li>
+</ul>
+
+<p>From Rust:</p>
+
+<ul>
+<li>std::result::Result</li>
+</ul>
+
+<p>There are many similar types in other functional languages.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/unruly/validation">Validation</a> is maintained by <a href="https://github.com/unruly">unruly</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-54623334-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
+
