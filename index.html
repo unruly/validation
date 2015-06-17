@@ -24,97 +24,92 @@
 
 <p>Available from the Central Repository. In Maven style:</p>
 
-<pre><code>    &lt;dependency&gt;
-        &lt;groupId&gt;co.unruly&lt;/groupId&gt;
-        &lt;artifactId&gt;validation&lt;/artifactId&gt;
-        &lt;version&gt;1.0&lt;/version&gt;
-    &lt;/dependency&gt;
-</code></pre>
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
+  &lt;<span class="pl-ent">groupId</span>&gt;co.unruly&lt;/<span class="pl-ent">groupId</span>&gt;
+  &lt;<span class="pl-ent">artifactId</span>&gt;validation&lt;/<span class="pl-ent">artifactId</span>&gt;
+  &lt;<span class="pl-ent">version</span>&gt;1.0&lt;/<span class="pl-ent">version</span>&gt;
+&lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
 
 <h2>
 <a id="create-a-validation" class="anchor" href="#create-a-validation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a validation</h2>
 
-<pre><code>Validation&lt;String,String&gt; success = Validation.success("woot");
-Validation&lt;String,String&gt; failure = Validation.failure("awww");
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-k">Validation&lt;<span class="pl-smi">String</span>,<span class="pl-smi">String</span>&gt;</span> success <span class="pl-k">=</span> <span class="pl-smi">Validation</span><span class="pl-k">.</span>success(<span class="pl-s"><span class="pl-pds">"</span>woot<span class="pl-pds">"</span></span>);
+<span class="pl-k">Validation&lt;<span class="pl-smi">String</span>,<span class="pl-smi">String</span>&gt;</span> failure <span class="pl-k">=</span> <span class="pl-smi">Validation</span><span class="pl-k">.</span>failure(<span class="pl-s"><span class="pl-pds">"</span>awww<span class="pl-pds">"</span></span>);</pre></div>
 
 <p>The first type parameter T is the type of a successful value, the latter S the type of error(s)</p>
 
 <h2>
 <a id="is-this-a-success-or-a-failure" class="anchor" href="#is-this-a-success-or-a-failure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Is this a success or a failure?</h2>
 
-<pre><code>boolean success = validation.isSuccess()
-boolean failure = validation.isFailure()
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-k">boolean</span> success <span class="pl-k">=</span> validation<span class="pl-k">.</span>isSuccess();
+<span class="pl-k">boolean</span> failure <span class="pl-k">=</span> validation<span class="pl-k">.</span>isFailure();</pre></div>
 
 <h2>
 <a id="get-the-value" class="anchor" href="#get-the-value" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get the value</h2>
 
-<pre><code>T value = validation.get()
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-smi">T</span> value <span class="pl-k">=</span> validation<span class="pl-k">.</span>get();</pre></div>
 
 <h2>
 <a id="get-the-errors" class="anchor" href="#get-the-errors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get the errors</h2>
 
-<pre><code>List&lt;S&gt; errors = validation.getErrors()
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-k">List&lt;<span class="pl-smi">S</span>&gt;</span> errors <span class="pl-k">=</span> validation<span class="pl-k">.</span>getErrors()</pre></div>
 
 <h2>
 <a id="map-or-flatmap" class="anchor" href="#map-or-flatmap" aria-hidden="true"><span class="octicon octicon-link"></span></a>Map or flatMap</h2>
 
-<pre><code>Validation.success(2).map(i -&gt; i + 1);
-Validation.success(2).flatMap(i -&gt; Validation.success(i + 1));
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-c">// Add one to contents</span>
+<span class="pl-smi">Validation</span><span class="pl-k">.</span>success(<span class="pl-c1">2</span>)<span class="pl-k">.</span>map(i <span class="pl-k">-</span><span class="pl-k">&gt;</span> i <span class="pl-k">+</span> <span class="pl-c1">1</span>);
 
-<p>Map and flatMap operate on the value of a successful Validation. They do not affect a failure Validation.</p>
+<span class="pl-c">// Add one to contents using flatMap</span>
+<span class="pl-smi">Validation</span><span class="pl-k">.</span>success(<span class="pl-c1">2</span>)<span class="pl-k">.</span>flatMap(i <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-smi">Validation</span><span class="pl-k">.</span>success(i <span class="pl-k">+</span> <span class="pl-c1">1</span>));</pre></div>
+
+<p>Map and flatMap operate on the value of a <strong>successful</strong> Validation. They do not affect a failure Validation.</p>
 
 <h2>
 <a id="filter" class="anchor" href="#filter" aria-hidden="true"><span class="octicon octicon-link"></span></a>Filter</h2>
 
-<pre><code>Validation.success(2).filter(i -&gt; i &gt; 1);
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-smi">Validation</span><span class="pl-k">.</span>success(<span class="pl-c1">2</span>)<span class="pl-k">.</span>filter(i <span class="pl-k">-</span><span class="pl-k">&gt;</span> i <span class="pl-k">&gt;</span> <span class="pl-c1">1</span>);</pre></div>
 
-<p>Filtering a success can turn it into a failure with empty errors. It does not affect a failure.</p>
+<p>Filtering a success with a non-truthy predicate will turn it into a failure with empty errors.
+It does not affect a failure.</p>
 
 <h2>
 <a id="catch-exceptions" class="anchor" href="#catch-exceptions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Catch exceptions</h2>
 
-<pre><code>Validation.tryTo(() -&gt; /* do something that may throw */)
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-smi">Validation</span><span class="pl-k">.</span>tryTo(() <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-c">/* do something that may throw */</span>)</pre></div>
 
-<p>If an exception is thrown tryTo will return a failure validation with the exception in the errors.</p>
+<p>If an exception is thrown, tryTo will return a failure validation with the exception in the errors.</p>
 
 <h2>
 <a id="map-flatmap-or-filter-with-potentially-exception-throwing-functions" class="anchor" href="#map-flatmap-or-filter-with-potentially-exception-throwing-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Map, flatMap or filter with potentially exception throwing functions</h2>
 
-<pre><code>validation.tryMap(...)
-validation.tryFlatMap(...)
-validation.tryFilter(...)
-</code></pre>
+<div class="highlight highlight-java"><pre>validation<span class="pl-k">.</span>tryMap(<span class="pl-c1">...</span>)
+validation<span class="pl-k">.</span>tryFlatMap(<span class="pl-c1">...</span>)
+validation<span class="pl-k">.</span>tryFilter(<span class="pl-c1">...</span>)</pre></div>
 
-<p>If there is an exception the Validation is a failure with the exception in the errors.</p>
+<p>If an exception is thrown, the Validation is a failure with the exception in the errors.</p>
 
 <p>There are a couple of caveats here:</p>
 
 <ul>
-<li>The type of the errors of the returned Validation is Object</li>
-<li>If function f throws and function g catches then map(f).map(g) may not equal map(g compose f)</li>
+<li>The type of the errors of the returned Validation is <strong>Object</strong>
+</li>
+<li>If function <em>f</em> throws and function <em>g</em> catches then <code>map(f).map(g)</code> may not equal <code>.map(g compose f)</code>
+</li>
 </ul>
 
 <h2>
 <a id="composition" class="anchor" href="#composition" aria-hidden="true"><span class="octicon octicon-link"></span></a>Composition</h2>
 
-<pre><code>Validation.success(3).compose(Validation.success(4), (a, b) -&gt; a * b);
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-smi">Validation</span><span class="pl-k">.</span>success(<span class="pl-c1">3</span>)<span class="pl-k">.</span>compose(<span class="pl-smi">Validation</span><span class="pl-k">.</span>success(<span class="pl-c1">4</span>), (a, b) <span class="pl-k">-</span><span class="pl-k">&gt;</span> a <span class="pl-k">*</span> b);</pre></div>
 
-<p>Two composed successes produce a success with the values combined using the provided function. Otherwise a failure is
-produced, including errors from each.</p>
+<p>Two composed successes produce a success with the values combined using the provided function.
+Otherwise a failure is produced, including errors from each.</p>
 
 <p>There are also some static methods for composing many Validations of type T for a few common types T
 (Integer, Long, Float, Double, Boolean, Collection, Map) with a sensible default composition function:</p>
 
-<pre><code>Validation.compose(() -&gt; Validation.success(3L), () -&gt; Validation.success(4L));
-</code></pre>
+<div class="highlight highlight-java"><pre><span class="pl-smi">Validation</span><span class="pl-k">.</span>compose(() <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-smi">Validation</span><span class="pl-k">.</span>success(<span class="pl-c1">3L</span>), () <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-smi">Validation</span><span class="pl-k">.</span>success(<span class="pl-c1">4L</span>));</pre></div>
 
 <p>The use of lambda suppliers here is <a href="http://benjiweber.co.uk/blog/2015/02/20/work-around-java-same-erasure-errors-with-lambdas/" title="Work around Java “same erasure” errors with Lambdas">a pattern</a> for working around Java's type erasure.</p>
 
@@ -124,21 +119,21 @@ produced, including errors from each.</p>
 <p>From Scala:</p>
 
 <ul>
-<li>scala.util.Either</li>
-<li>scala.util.Try</li>
+<li><a href="http://www.scala-lang.org/api/2.11.5/index.html#scala.util.Either">scala.util.Either</a></li>
+<li><a href="http://www.scala-lang.org/api/2.11.5/index.html#scala.util.Try">scala.util.Try</a></li>
 </ul>
 
 <p>From Scalaz:</p>
 
 <ul>
-<li>scalaz.\/</li>
-<li>scalaz.Validation</li>
+<li><a href="http://docs.typelevel.org/api/scalaz/nightly/index.html#scalaz.%24bslash%24div">scalaz.\/</a></li>
+<li><a href="http://docs.typelevel.org/api/scalaz/nightly/index.html#scalaz.Validation">scalaz.Validation</a></li>
 </ul>
 
 <p>From Rust:</p>
 
 <ul>
-<li>std::result::Result</li>
+<li><a href="https://doc.rust-lang.org/std/result/">std::result::Result</a></li>
 </ul>
 
 <p>There are many similar types in other functional languages.</p>
