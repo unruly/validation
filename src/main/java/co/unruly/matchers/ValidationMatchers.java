@@ -14,7 +14,7 @@ public class ValidationMatchers {
      * @param <T> Type of success value
      * @param <U> Type of error values
      */
-    public static <T, U> Matcher<? super Validation<? extends T,? extends U>> isFailureNotSuccess() {
+    public static <T, U> Matcher<Validation<? extends T,? extends U>> isFailureNotSuccess() {
         return new TypeSafeMatcher<Validation<? extends T,? extends U>>() {
             @Override
             protected boolean matchesSafely(Validation<? extends T,? extends U> item) {
@@ -52,7 +52,7 @@ public class ValidationMatchers {
      * @param <T> Type of success value
      * @param <U> Type of error values
      */
-    public static <T, U> Matcher<? super Validation<? extends T,? extends U>> hasValue(T expected) {
+    public static <T, U> Matcher<Validation<? extends T,? extends U>> hasValue(T expected) {
         return new TypeSafeMatcher<Validation<? extends T,? extends U>>() {
             @Override
             protected boolean matchesSafely(Validation<? extends T,? extends U> item) {
@@ -71,7 +71,7 @@ public class ValidationMatchers {
      * @param <T> Type of success value
      * @param <U> Type of error values
      */
-    public static <T, U> Matcher<? super Validation<? extends T,? extends U>> hasValue(Matcher<T> matcher) {
+    public static <T, U> Matcher<Validation<? extends T,? extends U>> hasValue(Matcher<T> matcher) {
         return new TypeSafeMatcher<Validation<? extends T,? extends U>>() {
             @Override
             protected boolean matchesSafely(Validation<? extends T,? extends U> item) {
@@ -94,7 +94,7 @@ public class ValidationMatchers {
      * @param <U> Type of error values
      */
     @SafeVarargs
-    public static <T, U> Matcher<? super Validation<? extends T,?>> hasErrorValue(U... expected) {
+    public static <T, U> Matcher<Validation<? extends T,?>> hasErrorValue(U... expected) {
         return new TypeSafeMatcher<Validation<? extends T,?>>() {
             @Override
             protected boolean matchesSafely(Validation<? extends T,?> item) {
@@ -118,7 +118,7 @@ public class ValidationMatchers {
      * @param <U> Type of error values
      */
     @SafeVarargs
-    public static <T, U> Matcher<? super Validation<? extends T,?>> hasErrorValue(Matcher<U>... expected) {
+    public static <T, U> Matcher<Validation<? extends T,?>> hasErrorValue(Matcher<U>... expected) {
         return new TypeSafeMatcher<Validation<? extends T,?>>() {
             @Override
             protected boolean matchesSafely(Validation<? extends T,?> item) {
@@ -161,7 +161,7 @@ public class ValidationMatchers {
      */
     @SafeVarargs
     @SuppressWarnings("unchecked")
-    public static <E extends Exception> Matcher<? super Validation<?, ?>> hasErrorValueWhichIsAnException(E... expected) {
+    public static <E extends Exception> Matcher<Validation<?, ?>> hasErrorValueWhichIsAnException(E... expected) {
         return new TypeSafeMatcher<Validation<?,?>>() {
             @Override
             protected boolean matchesSafely(Validation<?, ?> item) {
