@@ -27,6 +27,10 @@ public class Validator<T,U> {
         return new Validator<>(Arrays.asList(new ValidatorPair<>(predicate,failure)));
     }
 
+    public static <T,U> Validator<T,U> allOf(Validator<T, U> first, Validator<T,U>... rest) {
+        return Arrays.stream(rest).reduce(first, Validator::compose);
+    }
+
     public Validator<T,U> compose(Validator<T,U> other) {
         List<ValidatorPair<T, U>> newValidatorPairs = Stream.concat(validatorPairs.stream(), other.validatorPairs.stream()).collect(Collectors.toList());
         return new Validator<>(newValidatorPairs);

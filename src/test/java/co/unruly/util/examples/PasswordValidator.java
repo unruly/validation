@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static co.unruly.matchers.ValidationMatchers.*;
+import static co.unruly.util.Validator.allOf;
+import static co.unruly.util.Validator.from;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
@@ -22,9 +24,9 @@ public class PasswordValidator {
     Predicate<String> hasAtLeastOneNumeral = pw -> pw.matches(".*\\d.*");
     Predicate<String> hasNotBeenUsedBefore = pw -> !oldPasswords.contains(pw);
 
-    Validator<String,String> numeral = Validator.from(hasAtLeastOneNumeral, "Has fewer than 1 numeral");
-    Validator<String,String> length  = Validator.from(hasLengthAtLeast10, "Has fewer than 10 characters");
-    Validator<String,String> usedBefore  = Validator.from(hasNotBeenUsedBefore, "Has been used before");
+    Validator<String,String> numeral = from(hasAtLeastOneNumeral, "Has fewer than 1 numeral");
+    Validator<String,String> length  = from(hasLengthAtLeast10, "Has fewer than 10 characters");
+    Validator<String,String> usedBefore  = from(hasNotBeenUsedBefore, "Has been used before");
 
     Validator<String,String> passwordValidation = length.compose(usedBefore).compose(numeral);
 
@@ -47,5 +49,20 @@ public class PasswordValidator {
         assertThat(validation,isSuccessNotFailure());
         assertThat(validation,hasValue("1234567890"));
         assertThat(validation.getErrors(),empty());
+    }
+
+    @Test
+    public void shouldBuildACompoundValidatorUsingAllOf() throws Exception {
+        oldPasswords = Arrays.asList("password!");
+        final Validator<String, String> newPasswordValidator = allOf(
+            from(pw -> pw.length() >= 10, "Has fewer than 10 characters"),
+            from(pw -> pw.matches("\\d"), "Has fewer than 1 numeral"),
+            from(oldPasswords::contains, "Has been used before")
+        );
+
+        Validation<String, String> validation = newPasswordValidator.validate("password!");
+
+        assertThat(validation, isFailureNotSuccess());
+        assertThat(validation.getErrors(), contains("Has fewer than 10 characters", "Has fewer than 1 numeral"));
     }
 }
